@@ -2,10 +2,10 @@ package dht
 
 import (
 	"encoding/hex"
-	"fmt"
+//	"fmt"
 )
 
-const bits int = 7
+const bits int = 4
 
 
 type FingerTable struct {
@@ -18,7 +18,6 @@ func init_finger_table(n *DHTNode) [bits]*DHTNode{
 	for i := 0; i < bits; i++ {
 		x,_ := hex.DecodeString(n.nodeId) //func DecodeString(s string) ([]byte, error)
 		y, _ := calcFinger(x, (i+1), bits) // returnerar (string, []byte)
-		//fmt.Println("NODE:",n.nodeId ,"Y is now:",y)
 		if y == "" {
 			y = "00"
 		} else{}
@@ -40,7 +39,6 @@ func updateFingers(node *DHTNode)  [bits]*DHTNode{
 	for i := 0; i < bits; i++ {
 		x,_ := hex.DecodeString(node.nodeId)
 		y, _ := calcFinger(x, (i+1), bits)
-//		fmt.Println("NODE:",node.nodeId ,"FINGER2 is now:",y)
 /*		if y == "" {
 			y = "00"
 		}
@@ -52,14 +50,6 @@ func updateFingers(node *DHTNode)  [bits]*DHTNode{
 			//fmt.Println(y,"!=", node.fingers.nodefingerlist[i].nodeId)
 			//fmt.Println("replacing y")
 			a := node.lookup(y)
-			if (i == 3 && node.nodeId == "67"){
-				fmt.Println("a:",a)
-
-//				fmt.Println("NODE:",node.nodeId ,"FINGER2 is now:",y)
-		//	fmt.Println("A = ",a)	
-			}
-			
-
 		//	fmt.Println("a = ",a)
 			node.fingers.nodefingerlist[i] = a
 	}

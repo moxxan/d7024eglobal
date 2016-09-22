@@ -19,8 +19,6 @@ type DHTNode struct {
 	predecessor *DHTNode
 	contact     Contact
 	fingers 	*FingerTable
-	msg			*Msg
-	transport	*Transport
 }
 
 
@@ -42,8 +40,6 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	//KOMMENTERA DETTA SEN!...
 	dhtNode.fingers = new(FingerTable)
 	dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
-//	dhtNode.msg.bindAddress
-	dhtNode.transport = &Transport{dhtNode, dhtNode.contact.ip+":"+dhtNode.contact.port}
 
 	return dhtNode
 }
@@ -80,48 +76,20 @@ func (dhtNode *DHTNode) addToRing(newDHTNode *DHTNode) {
 	
 }
 
-
-/*func (dhtNode *DHTNode) keyowner (k string) bool{
-	if dhtNode.nodeId == k {
-		return true
-	} else if dhtNode.predecessor.nodeId == k{
-			return false
-		}
-	iskeyowner := between([]byte(dhtNode.predecessor.nodeId), []byte(dhtNode.nodeId), []byte(k))
-	return iskeyowner
-}*/
-
 func (dhtNode *DHTNode) lookup(key string) *DHTNode {
-	if(dhtNode.nodeId == key){
+	if between([]byte(dhtNode.nodeId), []byte(dhtNode.successor.nodeId), []byte(key)){
+		//fmt.Println("node id:",dhtNode.nodeId,"dht successor node id", dhtNode.successor.nodeId," key:", key)
+		if(dhtNode.nodeId == key){
 			return dhtNode
-	} else if ((dhtNode.nodeId < key) && (dhtNode.successor.nodeId > key)){
-		if (dhtNode.nodeId == "72"){
-			fmt.Println("nodeid:", dhtNode.nodeId, "node id succ:", dhtNode.successor.nodeId,"KEEEEEEEEEEEY", key)	
-		}
+		} else{
 			return dhtNode.successor
-	} else {
+		} 
+	}else{
 		//distance(a, b []byte, bits int) *big.Int
 		return dhtNode.successor.lookup(key)
 		//return dhtNode.successor.lookup(key)
 	}
 }
-
-
-/*func (dhtNode *DHTNode) lookup(key string) *DHTNode {
-	if between([]byte(dhtNode.nodeId), []byte(dhtNode.successor.nodeId), []byte(key)) {
-		if dhtNode.nodeId == key {
-
-			return dhtNode
-
-		} else {
-
-			return dhtNode.successor
-		}
-	} else {
-
-		return dhtNode.successor.lookup(key)
-	}
-}*/
 
 func (dhtNode *DHTNode) acceleratedLookupUsingFingers(key string) *DHTNode {
 	for i := len(dhtNode.fingers.nodefingerlist); i > 0; i-- {
@@ -178,30 +146,16 @@ func (dhtNode *DHTNode) printTable(){
 }
 
 func (dhtNode *DHTNode) stabilize(node string) {
-	n := dhtNode.successor.predecessor.nodeId
-	if between([]byte(dhtNode.nodeId), []byte(dhtNode.successor.nodeId), []byte(n)){
-		dhtNode.successor.nodeId = n
+	//n := dhtNode.successor.predecessor.nodeId
+	if dhtNode.successor.nodeId != node {
+	updateFingers(dhtNode.successor)
+/*		for i := 0; i< bits; i++{
+			if upd[i] != nil {
+
+			}
+		}
+*/		dhtNode.successor.stabilize(node)
 	}
-		//if dhtNode.successor.nodeId != node {
-	//		fmt.Println("nod:",dhtNode,"node successor is:", dhtNode.successor.nodeId)
-	dhtNode.successor.stabilize(node)
-	}
-
-func (dhtNode *DHTNode)	start_server(){
-	dhtNode.transport.listen()
-}
-
-	
-
-		
-
-
-
-/*func (dhtNode *DHTNode)	notify(node *DHTNode) {
-	if (dhtNode.predecessor == nil || between([]byte(dhtNode.predecessor.nodeId), []byte(dhtNode.nodeId), []byte(node.nodeId))){
-		dhtNode.predecessor = node
-	}
-}*/
 /*	var a = between([]byte(dhtNode.nodeId), []byte(dhtNode.successor.nodeId), []byte(n))
 		if a {
 	//		fmt.Println("stabilize node:",dhtNode.nodeId,"?", "skiten ligger mellan", dhtNode.nodeId, "och", dhtNode.successor.nodeId,"gör inget")
@@ -210,6 +164,7 @@ func (dhtNode *DHTNode)	start_server(){
 			updateFingers(dhtNode)
 	}
 	*/
+}
 
 
 /*func updateFingers(node *DHTNode){

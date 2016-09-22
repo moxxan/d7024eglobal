@@ -148,7 +148,7 @@ func TestDHT2(t *testing.T) {
 //node2.start_server()
 
 
-node3.transport.listen()
+//node3.transport.listen()
 
 	
 
