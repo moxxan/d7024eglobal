@@ -144,11 +144,16 @@ func TestDHT2(t *testing.T) {
 //	fmt.Println("TEST: " + node1.lookup(key2).nodeId + " is responsible for " + key2)
 //	fmt.Println("TEST: " + node1.lookup(key3).nodeId + " is responsible for " + key3)
 
-//node1.start_server()
-//node2.start_server()
 
+node1.start_server()
+node2.start_server()
 
-//node3.transport.listen()
+src := node1.contact.ip +":" + node1.contact.port
+dst := node2.contact.ip +":" + node2.contact.port
+
+node1.transport.send(&Msg{"node1 sending",src,dst,[]byte("yolo rocky canoa")})
+//node2.transport.send(&Msg{"nod2 sending",dst,src,[]byte("node2 rocky balboa")})
+node3.transport.listen()
 
 	
 
