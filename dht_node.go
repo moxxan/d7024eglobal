@@ -42,8 +42,15 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	//KOMMENTERA DETTA SEN!...
 	dhtNode.fingers = new(FingerTable)
 	dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
+	dhtNode.createTransport()
 
 	return dhtNode
+}
+
+func (dhtNode *DHTNode) createTransport(){
+	dhtNode.transport = &Transport{dhtNode, dhtNode.contact.ip +":"+dhtNode.contact.port, nil}
+	dhtNode.transport.msgQ = make(chan *Msg)
+	dhtNode.transport.initmsgQ()
 }
 
 func (dhtNode *DHTNode) addToRing(newDHTNode *DHTNode) { 

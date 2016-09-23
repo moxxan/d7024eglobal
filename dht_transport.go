@@ -14,7 +14,7 @@ type Transport struct {
 
 func (transport *Transport) listen() {
 	udpAddr, err := net.ResolveUDPAddr("udp", transport.bindAddress)
-	fmt.Println("transport bindaddress:", transport.bindAddress)
+//	fmt.Println("transport bindaddress:", transport.bindAddress)
 	conn, err := net.ListenUDP("udp", udpAddr)
 	conn.SetReadBuffer(10000)
 	conn.SetWriteBuffer(10000)
@@ -26,6 +26,9 @@ func (transport *Transport) listen() {
 	for {
 		msg := Msg{}
 		err = dec.Decode(&msg)
+			go func() {
+				transport.msgQ <-&msg
+			} ()
 
 	}
 
@@ -53,6 +56,9 @@ func (transport *Transport) initmsgQ() {
 				switch v.Key{
 					case "hello":
 						fmt.Println(string(v.Bytes))
+						transport.send(&Msg{"reply","",v.Src,[]byte("tjuuu")})
+					case "reply":
+						fmt.Println("reply:",string(v.Bytes))
 				}
 			}
 		}
