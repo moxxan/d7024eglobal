@@ -1,9 +1,7 @@
 package dht
 
 import (
-	"net"
-	"encoding/json"
-	"fmt"
+
 )
 type Msg struct {
 
@@ -15,33 +13,3 @@ type Msg struct {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//funtionen Bytes tar ett msg.Bytes() från transport funktionen, så
-//mdstrukten måste encodas till bytes, jag använde json då det är smidigt.
-
-/*
-func (msg *Msg) Bytes() []byte {
-	encoded, err := json.Marshal(msg)
-	if err == nil{
-		fmt.Println("encoded value is:", encoded)
-		return encoded
-	}
-	fmt.Println("error BYTES function is:", err)
-	return nil
-	}
-*/
