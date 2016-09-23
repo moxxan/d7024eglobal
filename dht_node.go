@@ -19,6 +19,8 @@ type DHTNode struct {
 	predecessor *DHTNode
 	contact     Contact
 	fingers 	*FingerTable
+	transport	*Transport
+	msg			*Msg
 }
 
 
@@ -164,6 +166,10 @@ func (dhtNode *DHTNode) stabilize(node string) {
 			updateFingers(dhtNode)
 	}
 	*/
+}
+
+func (dhtNode *DHTNode) start_server(){
+	go dhtNode.transport.listen()
 }
 
 
