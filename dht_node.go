@@ -173,6 +173,12 @@ func (dhtNode *DHTNode) start_server(){
 }
 
 
+
+
+
+
+
+
 /*func updateFingers(node *DHTNode){
 	for i := node; i != node.predecessor; i = i.successor{
 		i.fingers.nodefingerlist = init_finger_table(i)
