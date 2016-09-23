@@ -151,7 +151,7 @@ node2.start_server()
 src := node1.contact.ip +":" + node1.contact.port
 dst := node2.contact.ip +":" + node2.contact.port
 
-node1.transport.send(&Msg{"hello",src,dst,[]byte("yolo rocky canoa")})
+node1.transport.send(&Msg{"hello",src,dst,[]byte("hello world")})
 //node2.transport.send(&Msg{"nod2 sending",dst,src,[]byte("node2 rocky balboa")})
 node3.transport.listen()
 
