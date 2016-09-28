@@ -141,7 +141,7 @@ func TestDHT2(t *testing.T) {
 	dst := node2.contact.ip + ":" + node2.contact.port
 
 	//node1.transport.send(&Msg{"hello", src, dst, []byte("hello world")})
-	node1.transport.send(&Msg{"hello", src, dst, []byte("hello world")})
+	node1.transport.send(&Msg{"", src, dst, []byte("hello world"),"printRing"})
 	//node2.transport.send(&Msg{"nod2 sending",dst,src,[]byte("node2 rocky balboa")})
 	node3.transport.listen()
 

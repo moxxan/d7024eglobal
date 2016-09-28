@@ -20,6 +20,12 @@ type DHTNode struct {
 	fingers     *FingerTable
 	transport   *Transport
 	msg         *Msg
+	TaskQ		chan *Task
+}
+
+type Task struct {
+	message *Msg
+	Type 	string
 }
 
 func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
@@ -41,7 +47,7 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	dhtNode.fingers = new(FingerTable)
 	dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
 	dhtNode.createTransport()
-
+	dhtNode.TaskQ = make(chan *Task)
 	return dhtNode
 }
 
@@ -176,6 +182,7 @@ func (dhtNode *DHTNode) stabilize(node string) {
 }
 
 func (dhtNode *DHTNode) start_server() {
+	dhtNode.initTaskQ()
 	go dhtNode.transport.listen()
 }
 
@@ -197,3 +204,20 @@ func (dhtNode *DHTNode) find_predecessor(node *DHTNode) *DHTNode{
 	return successorNode
 
 }*/
+
+
+
+func (node *DHTNode) initTaskQ() {
+	go func() {
+		for {
+			select {
+			case t := <- node.TaskQ:
+				switch t.Type {
+				case "hello":	//test case
+					fmt.Println("test")
+					//transport.send(&Msg{"printRing", "", v.Src, []byte("tjuuu")})
+				}
+			}
+		}
+	}()
+}
