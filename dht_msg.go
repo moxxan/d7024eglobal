@@ -7,18 +7,32 @@ type Msg struct {
 	Src   string //från noden som kalla
 	Dst   string //destinationsadress
 	Bytes []byte //transport funktionen, msg.Bytes
-	//Type  string // type of message thats is being sent
+	Type  string // type of message thats is being sent
 }
 
-/*func initPringRingMessage(dst, src string) *Msg {
-	msg := Msg{}
-	msg.Type = "printRing"
-	msg.Key = ""
+func message(t, dst, src string, bytes []byte) *Msg {
+	msg := &Msg{}
+	msg.Type = t
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = bytes
+	return msg
+}
+
+func joinMessage(dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "addToRing"
 	msg.Src = ""
 	msg.Dst = dst
 	msg.Bytes = nil
+	return msg
+}
 
-	return *msg
-}*/
-
-//func init
+func printMessage(dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "printRing"
+	msg.Src = ""
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
