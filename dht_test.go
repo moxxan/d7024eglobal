@@ -121,14 +121,14 @@ func TestDHT2(t *testing.T) {
 	//	key2 := "87adb987ebbd55db2c5309fd4b23203450ab0083"
 	//	key3 := "74475501523a71c34f945ae4e87d571c2c57f6f3"
 
-	node1.addToRing(node2)
+	/*node1.addToRing(node2)
 	node1.addToRing(node3)
 	node1.addToRing(node4)
 	node4.addToRing(node5)
 	node3.addToRing(node6)
 	node3.addToRing(node7)
 	node3.addToRing(node8)
-	node7.addToRing(node9)
+	node7.addToRing(node9)*/
 
 	//	fmt.Println("TEST: " + node1.lookup(key1).nodeId + " is responsible for " + key1)
 	//	fmt.Println("TEST: " + node1.lookup(key2).nodeId + " is responsible for " + key2)
@@ -139,10 +139,12 @@ func TestDHT2(t *testing.T) {
 
 	src := node1.contact.ip + ":" + node1.contact.port
 	dst := node2.contact.ip + ":" + node2.contact.port
+	master := &tinyNode{node1.nodeId, src}
 
 	//node1.transport.send(&Msg{"hello", src, dst, []byte("hello world")})
-	node1.transport.send(&Msg{"", src, dst, []byte("hello world"),"printRing"})
+	//node1.transport.send(&Msg{src, "", src, dst, []byte("hello world"), "printRing"})
 	//node2.transport.send(&Msg{"nod2 sending",dst,src,[]byte("node2 rocky balboa")})
+
 	node3.transport.listen()
 
 	//	fmt.Println("-> ring structure")
