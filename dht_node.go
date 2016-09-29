@@ -19,13 +19,20 @@ type DHTNode struct {
 	contact     Contact
 	fingers     *FingerTable
 	transport   *Transport
-	msg         *Msg
-	TaskQ		chan *Task
+	msg         chan *Msg
+	TaskQ       chan *Task
+}
+
+
+
+type tinyNode struct {
+	nodeID string
+	adress string
 }
 
 type Task struct {
 	message *Msg
-	Type 	string
+	Type    string
 }
 
 func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
@@ -86,6 +93,17 @@ func (dhtNode *DHTNode) addToRing(newDHTNode *DHTNode) {
 
 }
 
+func (dhtNode *DHTNode) join(master *tinyNode) {
+	src := dhtNode.contact.ip + ":" + dhtNode.contact.port
+	dhtNode.transport.send(message("join" , src, master, src , nil)
+	for(){
+		select{
+		case r <- dhtNode.responseQ:
+			dhtNode.successor
+		}
+	}	
+}
+
 func (dhtNode *DHTNode) lookup(key string) *DHTNode {
 	if between([]byte(dhtNode.nodeId), []byte(dhtNode.successor.nodeId), []byte(key)) {
 		//fmt.Println("node id:",dhtNode.nodeId,"dht successor node id", dhtNode.successor.nodeId," key:", key)
@@ -138,9 +156,11 @@ func (dhtNode *DHTNode) printRing() {
 }
 
 //print ring när server körs
-func (dhtNode *DHTNode) improvePrintRing(msg *Msg) {
-
-}
+/*func (dhtNode *DHTNode) improvePrintRing(msg *Msg) {
+	if msg.Origin != msg.Src {
+		fmt.Println(msg.Src)
+	}
+}*/
 
 func (dhtNode *DHTNode) testCalcFingers(m int, bits int) {
 	idBytes, _ := hex.DecodeString(dhtNode.nodeId)
@@ -205,16 +225,15 @@ func (dhtNode *DHTNode) find_predecessor(node *DHTNode) *DHTNode{
 
 }*/
 
-
-
 func (node *DHTNode) initTaskQ() {
 	go func() {
 		for {
 			select {
-			case t := <- node.TaskQ:
+			case t := <-node.TaskQ:
 				switch t.Type {
-				case "hello":	//test case
+				case "hello": //test case
 					fmt.Println("test")
+					//node.improvePrintRing(node.msg)
 					//transport.send(&Msg{"printRing", "", v.Src, []byte("tjuuu")})
 				}
 			}
