@@ -58,13 +58,17 @@ func (transport *Transport) initmsgQ() {
 				case "reply": //test
 					fmt.Println("hej:", string(msg.Bytes))
 
-				case "printRing": //LEGIT CASE
-					transport.node.TaskQ <- &Task{msg, "hello"} //transport.node.printRing()
+				case "printRing":
+					
+					transport.node.TaskQ <- &Task{msg, "printRing"} //transport.node.printRing()
 					//transport.send(&Msg{"ring", "", v.Src, []byte(transport.node.printRing())})
-				case "addToRing": //LEGIT CASE
-					transport.node.printRing()
+				case "addToRing":
+					//transport.node.printRing()
 				case "response":
 					transport.node.responseQ <- msg
+				case "join":
+					
+					transport.node.TaskQ <-&Task{msg,"join"}
 				}
 			}
 		}

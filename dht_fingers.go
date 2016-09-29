@@ -1,7 +1,7 @@
 package dht
 
 import (
-	"encoding/hex"
+//	"encoding/hex"
 //	"fmt"
 )
 
@@ -13,6 +13,7 @@ type FingerTable struct {
 }
 
 
+/*
 func init_finger_table(n *DHTNode) [bits]*DHTNode{
 	var templist [bits]*DHTNode
 	for i := 0; i < bits; i++ {
@@ -29,9 +30,10 @@ func init_finger_table(n *DHTNode) [bits]*DHTNode{
 	}
 return templist
 }
+*/
 
 
-
+/*
 func updateFingers(node *DHTNode)  [bits]*DHTNode{
 	//var templist [bits]*DHTNode
 	for i := 0; i < bits; i++ {
@@ -40,7 +42,7 @@ func updateFingers(node *DHTNode)  [bits]*DHTNode{
 /*		if y == "" {
 			y = "00"
 		}
-*/
+
 		if (y == node.fingers.nodefingerlist[i].nodeId){
 		} else {
 			a := node.lookup(y)
@@ -52,3 +54,4 @@ func updateFingers(node *DHTNode)  [bits]*DHTNode{
 }
 return node.fingers.nodefingerlist
 }
+*/
