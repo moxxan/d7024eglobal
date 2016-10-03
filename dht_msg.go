@@ -42,3 +42,23 @@ func printMessage(origin, dst string) *Msg {
 	//msg.Key = key
 	return msg
 }
+
+func notifyMessage(src, dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "notify"
+	msg.Origin = ""
+	msg.Key = ""
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
+
+func getNodeMessage(src, dst, string) *Msg {
+	msg := &Msg{}
+	msg.Type = "pred"
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}

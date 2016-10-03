@@ -23,8 +23,6 @@ type DHTNode struct {
 	TaskQ       chan *Task
 }
 
-
-
 type tinyNode struct {
 	nodeId string
 	adress string
@@ -47,7 +45,7 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 		dhtNode.nodeId = *nodeId
 	}
 
-	dhtNode.successor = &tinyNode{dhtNode.nodeId, ip+":"+port}
+	dhtNode.successor = &tinyNode{dhtNode.nodeId, ip + ":" + port}
 	dhtNode.predecessor = nil
 	dhtNode.fingers = new(FingerTable)
 	//KOMMENTERA DETTA SEN
@@ -95,37 +93,36 @@ func (dhtNode *DHTNode) createTransport() {
 
 func (dhtNode *DHTNode) join(master *tinyNode) {
 	src := dhtNode.contact.ip + ":" + dhtNode.contact.port
-	dhtNode.transport.send(message("join" , src, master.adress, src, dhtNode.nodeId, nil))
-	for{
-		select{
-		case r := <- dhtNode.responseQ:
+	dhtNode.transport.send(message("join", src, master.adress, src, dhtNode.nodeId, nil))
+	for {
+		select {
+		case r := <-dhtNode.responseQ:
 			dhtNode.successor.adress = r.Src
 			dhtNode.successor.nodeId = r.Key
 			return
 			//fmt.Println(dhtNode.nodeId, dhtNode.successor)
 		}
-	}	
-}
-
-
-//Ligger du mellan noderna, nej. skicka join msg till nästa nod och kolla 
-//om han ligger mellan den noden och hans successor.
-func (node *DHTNode) findSucc(msg *Msg){
-	var a = between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(msg.Key))
-	if a{
-		
-		node.transport.send(message("response", msg.Dst, msg.Origin, node.successor.adress, node.successor.nodeId, nil))
-		node.successor.adress = msg.Origin
-		node.successor.nodeId = msg.Key
-	} else{
-		node.transport.send(message("join", msg.Origin, node.successor.adress, msg.Dst, msg.Key, nil))
-		
 	}
 }
 
-func (node *DHTNode) printNetworkRing(msg *Msg){
-	if ((msg.Origin != msg.Dst)){
-		
+//Ligger du mellan noderna, nej. skicka join msg till nästa nod och kolla
+//om han ligger mellan den noden och hans successor.
+func (node *DHTNode) findSucc(msg *Msg) {
+	var a = between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(msg.Key))
+	if a {
+
+		node.transport.send(message("response", msg.Dst, msg.Origin, node.successor.adress, node.successor.nodeId, nil))
+		node.successor.adress = msg.Origin
+		node.successor.nodeId = msg.Key
+	} else {
+		node.transport.send(message("join", msg.Origin, node.successor.adress, msg.Dst, msg.Key, nil))
+
+	}
+}
+
+func (node *DHTNode) printNetworkRing(msg *Msg) {
+	if msg.Origin != msg.Dst {
+
 		fmt.Println(node.nodeId, node.successor)
 		node.transport.send(printMessage(msg.Origin, node.successor.adress))
 	}
@@ -229,7 +226,7 @@ func (dhtNode *DHTNode) printTable() {
 		//		fmt.Println("skiten ligger inte mellan, uppdatera fingers.")
 				updateFingers(dhtNode)
 		}
-	
+
 }
 */
 func (dhtNode *DHTNode) start_server() {
@@ -274,5 +271,14 @@ func (node *DHTNode) initTaskQ() {
 	}()
 }
 
+func (dhtnode *DHTNode) stabilize(msg *Msg) {
+	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
+	SuccOfPred := getNodeMessage(nodeAdress, dhtnode.successor)
+	go func() { dhtnode.transport.send(SuccOfPred) }()
+	for {
+		select {
+		case r := <-dhtnode.responseQ:
 
-def func (node *DHTNode)notify()
+		}
+	}
+}
