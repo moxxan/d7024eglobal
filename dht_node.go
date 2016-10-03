@@ -278,6 +278,8 @@ func (dhtnode *DHTNode) stabilize(msg *Msg) {
 	for {
 		select {
 		case r := <-dhtnode.responseQ:
+			dhtnode.successor.adress = 
+			dhtnode.successor.nodeId = 
 
 		}
 	}
