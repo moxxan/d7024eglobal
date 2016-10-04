@@ -254,7 +254,7 @@ func (dhtNode *DHTNode) find_predecessor(node *DHTNode) *DHTNode{
 
 }*/
 
-func (dhtNode *DHTNode) notifyNetwork(msg *Msg){
+func (dhtNode *DHTNode) notifyNetwork(msg *Msg) {
 
 }
 
@@ -277,29 +277,31 @@ func (node *DHTNode) initTaskQ() {
 }
 
 func (dhtnode *DHTNode) stabilize(msg *Msg) {
-	time := time.NewTimer(time.Millisecond*3000)
+	time := time.NewTimer(time.Millisecond * 3000)
 	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
-	SuccOfPred := getNodeMessage(nodeAdress, dhtnode.successor)
+	SuccOfPred := getNodeMessage(nodeAdress, dhtnode.successor.adress) // id eller adress?
 	go func() { dhtnode.transport.send(SuccOfPred) }()
 	for {
 		select {
-			case r := <-dhtnode.responseQ:
-				if (between([]byte(dhtnode.nodeId), []byte(dhtNode.successor.nodeId), []byte(msg.Key))/*) && msg.Key != "" )*/{
-				dhtnode.successor.adress = msg.Origin
-				dhtnode.successor.nodeId = msg.Key
+		case r := <-dhtnode.responseQ:
+			if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) /*) && msg.Key != "" )*/ {
+				dhtnode.successor.adress = r.Src //origin eller source
+				//dhtnode.successor.adress = msg.Origin
+				//dhtnode.successor.nodeId = msg.Key
+				dhtnode.successor.nodeId = r.Key
 				return
 			}
-				//ska notifymessage ha fler variabler?
-				n := notifyMessage(nodeAdress,dhtNode.successor.adress)
+			//ska notifymessage ha fler variabler?
+			n := notifyMessage(nodeAdress, dhtnode.successor.adress)
 
-				go func () { 
-					dhtNode.transport.send(notify)
-					} () 	
-				fmt.Println("dhtnode id:", dhtNode.nodeId, "dhtnode successor id:", dhtNode.successor, "dhtnode predecessor id:",dhtNode.predecessor)
-				return
-			case timer := <-time.C: //timer
-				fmt.Println("TIMER ERROR:", timer)
-				return 
+			go func() {
+				dhtnode.transport.send(n)
+			}()
+			fmt.Println("dhtnode id:", dhtnode.nodeId, "dhtnode successor id:", dhtnode.successor, "dhtnode predecessor id:", dhtnode.predecessor)
+			return
+		case timer := <-time.C: //timer
+			fmt.Println("TIMER ERROR:", timer)
+			return
 		}
 	}
 }
