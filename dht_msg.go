@@ -54,7 +54,7 @@ func notifyMessage(src, dst string) *Msg {
 	return msg
 }
 
-func getNodeMessage(src, dst, string) *Msg {
+func getNodeMessage(src, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "pred"
 	msg.Src = src
