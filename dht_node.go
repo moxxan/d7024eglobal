@@ -255,7 +255,10 @@ func (dhtNode *DHTNode) find_predecessor(node *DHTNode) *DHTNode{
 }*/
 
 func (dhtNode *DHTNode) notifyNetwork(msg *Msg) {
-
+	if (dhtNode.predecessor.adress == "") || between([]byte(dhtNode.predecessor.nodeId), []byte(dhtNode.nodeId), []byte(msg.Key)) {
+		dhtNode.predecessor.adress = msg.Src
+		dhtNode.predecessor.nodeId = msg.Key
+	}
 }
 
 func (node *DHTNode) initTaskQ() {
@@ -270,13 +273,16 @@ func (node *DHTNode) initTaskQ() {
 					//transport.send(&Msg{"printRing", "", v.Src, []byte("tjuuu")})
 				case "join":
 					node.findSucc(t.message)
+
+				case "stabilize":
+					node.stabilize()
 				}
 			}
 		}
 	}()
 }
 
-func (dhtnode *DHTNode) stabilize(msg *Msg) {
+func (dhtnode *DHTNode) stabilize() {
 	time := time.NewTimer(time.Millisecond * 3000)
 	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
 	SuccOfPred := getNodeMessage(nodeAdress, dhtnode.successor.adress) // id eller adress?
@@ -284,7 +290,7 @@ func (dhtnode *DHTNode) stabilize(msg *Msg) {
 	for {
 		select {
 		case r := <-dhtnode.responseQ:
-			if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) /*) && msg.Key != "" )*/ {
+			if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(r.Key)) /*) && msg.Key != "" )*/ {
 				dhtnode.successor.adress = r.Src //origin eller source
 				//dhtnode.successor.adress = msg.Origin
 				//dhtnode.successor.nodeId = msg.Key
