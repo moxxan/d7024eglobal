@@ -231,7 +231,8 @@ func (dhtNode *DHTNode) printTable() {
 }
 */
 func (dhtNode *DHTNode) start_server() {
-	dhtNode.initTaskQ()
+	go dhtNode.initTaskQ()
+	go dhtNode.stableTimmer()
 	go dhtNode.transport.listen()
 }
 
@@ -242,6 +243,11 @@ func (dhtNode *DHTNode) start_server() {
 }
 
 */
+
+func (dhtnode *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
+	task := &Task{msg, typeOfTask}
+	dhtnode.TaskQ <- task
+}
 
 /*func (dhtNode *DHTNode) find_successor(node *DHTNode) *DHTNode{
 	predecessorNode := dhtNode.find_predecessor(node)
@@ -309,5 +315,12 @@ func (dhtnode *DHTNode) stabilize() {
 			fmt.Println("TIMER ERROR:", timer)
 			return
 		}
+	}
+}
+
+func (dhtnode *DHTNode) stableTimmer() {
+	for {
+		time.Sleep(time.Millisecond * 1000)
+		dhtnode.createNewTask(nil, "stabilize")
 	}
 }
