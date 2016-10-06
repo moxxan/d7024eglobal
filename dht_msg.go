@@ -70,7 +70,7 @@ func getNodeMessage(src, dst string) *Msg {
 	msg.Type = "pred"
 	msg.Adress = ""
 	msg.Id = ""
-	msg.Origin = "" origin
+	msg.Origin = ""
 	msg.Src = src
 	msg.Dst = dst
 	msg.Bytes = nil
@@ -82,7 +82,7 @@ func responseMsg(src, dst, adress, id string) *Msg {
 	msg.Type = "response"
 	msg.Adress = adress
 	msg.Id = id
-	msg.Origin = origin
+	msg.Origin = ""
 	msg.Src = src
 	msg.Dst = dst
 	msg.Bytes = nil

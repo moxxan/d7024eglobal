@@ -25,9 +25,8 @@ type DHTNode struct {
 }
 
 type tinyNode struct {
-	adress string
 	nodeId string
-	
+	adress string
 }
 
 type Task struct {
@@ -66,7 +65,8 @@ func (dhtNode *DHTNode) createTransport() {
 
 func (dhtNode *DHTNode) join(master *tinyNode) {
 	src := dhtNode.contact.ip + ":" + dhtNode.contact.port
-	dhtNode.transport.send(message("join", src, master.adress, src, dhtNode.nodeId, nil))
+	message := message("join", src, master.adress, src, dhtNode.nodeId, nil)
+	dhtNode.transport.send(message)
 	for {
 		select {
 		case r := <-dhtNode.responseQ:
@@ -146,7 +146,7 @@ func (dhtnode *DHTNode) stabilize() {
 		case r := <-dhtnode.responseQ:
 			fmt.Println("case 1 stab: ")
 			between := (between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(r.Key))) && r.Key != " " /*) && msg.Key != "" )*/ 
-			if {
+			if between {
 				dhtnode.successor.adress = r.Src //origin eller source
 				//dhtnode.successor.adress = msg.Origin
 				//dhtnode.successor.nodeId = msg.Key
@@ -193,6 +193,7 @@ func (node *DHTNode) setPred(msg *Msg) {
 
 func (node *DHTNode) getPred(msg *Msg){
 	go func () {
-		node.transport.send(responseMsg(msg.Dst, msg.Src, node.predecessor.adress, msg.predecessor.nodeId))
+		responseMsg := responseMsg(msg.Dst, msg.Src, node.predecessor.adress, node.predecessor.nodeId)
+		node.transport.send(responseMsg)
 	}()
 }

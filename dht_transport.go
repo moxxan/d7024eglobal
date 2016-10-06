@@ -67,8 +67,9 @@ func (transport *Transport) initmsgQ() {
 				case "response":
 							transport.node.responseQ <- msg
 				case "join":
-					
 					transport.node.TaskQ <-&Task{msg,"join"}
+				case "notify":
+					transport.node.notifyNetwork(msg)
 				}
 			}
 		}

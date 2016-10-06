@@ -54,7 +54,6 @@ func TestDHT2(t *testing.T) {
 	src := node1.contact.ip + ":" + node1.contact.port
 	//dst := node2.contact.ip + ":" + node2.contact.port
 	master := &tinyNode{node1.nodeId, src}
-
 	node2.join(master)
 	node3.join(master)
 	node7.join(master)
