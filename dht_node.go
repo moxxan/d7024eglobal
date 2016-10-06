@@ -25,8 +25,9 @@ type DHTNode struct {
 }
 
 type tinyNode struct {
-	nodeId string
 	adress string
+	nodeId string
+	
 }
 
 type Task struct {
@@ -137,15 +138,15 @@ func (node *DHTNode) initTaskQ() {
 
 func (dhtnode *DHTNode) stabilize() {
 	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
-	SuccOfPred := getNodeMessage(nodeAdress, dhtnode.successor.adress) // id eller adress?
-	go func() { dhtnode.transport.send(SuccOfPred) }()
+	predOfSucc := getNodeMessage(nodeAdress, dhtnode.successor.adress) // id eller adress?
+	go func() { dhtnode.transport.send(predOfSucc) }()
 	time := time.NewTimer(time.Millisecond * 3000)
 	for {
 		select {
 		case r := <-dhtnode.responseQ:
 			fmt.Println("case 1 stab: ")
-
-			if (between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(r.Key))) && r.Key != " " /*) && msg.Key != "" )*/ {
+			between := (between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(r.Key))) && r.Key != " " /*) && msg.Key != "" )*/ 
+			if {
 				dhtnode.successor.adress = r.Src //origin eller source
 				//dhtnode.successor.adress = msg.Origin
 				//dhtnode.successor.nodeId = msg.Key
@@ -180,7 +181,18 @@ func (dhtnode *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
 	dhtnode.TaskQ <- task
 }
 
+func (node *DHTNode) setSucc(msg *Msg) {
+		node.successor.adress = msg.Src
+		node.successor.nodeId = msg.Key
+}
 
-func (dhtnode *DHTNode)findPredecessor(msg *Msg){
-	predMess := 
-} 
+func (node *DHTNode) setPred(msg *Msg) {
+		node.predecessor.adress = msg.Src
+		node.predecessor.nodeId = msg.Key
+}
+
+func (node *DHTNode) getPred(msg *Msg){
+	go func () {
+		node.transport.send(responseMsg(msg.Dst, msg.Src, node.predecessor.adress, msg.predecessor.nodeId))
+	}()
+}

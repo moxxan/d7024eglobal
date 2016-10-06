@@ -65,7 +65,7 @@ func (transport *Transport) initmsgQ() {
 				case "addToRing":
 					//transport.node.printRing()
 				case "response":
-					transport.node.responseQ <- msg
+							transport.node.responseQ <- msg
 				case "join":
 					
 					transport.node.TaskQ <-&Task{msg,"join"}
