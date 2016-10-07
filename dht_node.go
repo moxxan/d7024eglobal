@@ -50,7 +50,8 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	dhtNode.predecessor = &tinyNode{"",""}
 	dhtNode.fingers = new(FingerTable)
 	//KOMMENTERA DETTA SEN
-	dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
+	// denna funkar ej V
+	//dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
 	dhtNode.createTransport()
 	dhtNode.responseQ = make(chan *Msg)
 	dhtNode.TaskQ = make(chan *Task)
@@ -177,9 +178,9 @@ func (dhtnode *DHTNode) stableTimmer() {
 	}
 }
 
-func (dhtnode *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
+func (node *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
 	task := &Task{msg, typeOfTask}
-	dhtnode.TaskQ <- task
+	node.TaskQ <- task
 }
 
 func (node *DHTNode) setSucc(msg *Msg) {
@@ -195,9 +196,7 @@ func (node *DHTNode) setPred(msg *Msg) {
 func (node *DHTNode) getPred(msg *Msg){
 	//fmt.Println("hej getpred")
 	//fmt.Println("src:",msg.Dst,"dst:", msg.Src,"node pred adress:", node.predecessor.adress,"node pred. node id:", node.predecessor.nodeId)
-	
 	//fmt.Println("dst:", msg.Src)
-	
 	//fmt.Println("node pred adress:", node.predecessor.adress)
 	//fmt.Println("node pred node id:", node.predecessor.nodeId)
 
