@@ -47,10 +47,11 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	}
 
 	dhtNode.successor = &tinyNode{dhtNode.nodeId, ip + ":" + port}
-	dhtNode.predecessor = nil
+	dhtNode.predecessor = &tinyNode{"",""}
 	dhtNode.fingers = new(FingerTable)
 	//KOMMENTERA DETTA SEN
-	dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
+	// denna funkar ej V
+	//dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
 	dhtNode.createTransport()
 	dhtNode.responseQ = make(chan *Msg)
 	dhtNode.TaskQ = make(chan *Task)
@@ -128,7 +129,7 @@ func (node *DHTNode) initTaskQ() {
 					node.findSucc(t.message)
 
 				case "stabilize":
-					fmt.Println("stabilize case: ", node.nodeId)
+		//			fmt.Println("stabilize case: ", node.nodeId)
 					node.stabilize()
 				}
 			}
@@ -136,31 +137,32 @@ func (node *DHTNode) initTaskQ() {
 	}()
 }
 
-func (dhtnode *DHTNode) stabilize() {
-	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
-	predOfSucc := getNodeMessage(nodeAdress, dhtnode.successor.adress) // id eller adress?
-	go func() { dhtnode.transport.send(predOfSucc) }()
-	time := time.NewTimer(time.Millisecond * 3000)
+func (node *DHTNode) stabilize() {
+	nodeAdress := node.contact.ip + ":" + node.contact.port
+	predOfSucc := getNodeMessage(nodeAdress, node.successor.adress) // id eller adress?
+	go func() { node.transport.send(predOfSucc) }()
+	time := time.NewTimer(time.Millisecond * 5000)
 	for {
 		select {
-		case r := <-dhtnode.responseQ:
-			fmt.Println("case 1 stab: ")
-			between := (between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(r.Key))) && r.Key != " " /*) && msg.Key != "" )*/ 
+		case r := <-node.responseQ:
+			//fmt.Println("case 1 stab: ")
+			
+			between := (between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(r.Key))) && r.Key != "" //r.key = "" för att connecta sista nodens successor
 			if between {
-				dhtnode.successor.adress = r.Src //origin eller source
-				//dhtnode.successor.adress = msg.Origin
-				//dhtnode.successor.nodeId = msg.Key
-				dhtnode.successor.nodeId = r.Key
-				fmt.Println("beetween")
+				node.successor.adress = r.Src //origin eller source
+				//node.successor.adress = msg.Origin
+				//node.successor.nodeId = msg.Key
+				node.successor.nodeId = r.Key
+			//	fmt.Println("beetween")
 				return
 			}
 			//ska notifymessage ha fler variabler?
-			N := notifyMessage(nodeAdress, dhtnode.successor.adress)
+			N := notifyMessage(nodeAdress, node.successor.adress, nodeAdress, node.nodeId)
 
 			go func() {
-				dhtnode.transport.send(N)
+				node.transport.send(N)
 			}()
-			fmt.Println("dhtnode id:", dhtnode.nodeId, "dhtnode successor id:", dhtnode.successor, "dhtnode predecessor id:", dhtnode.predecessor)
+		//	fmt.Println("node id:", node.nodeId, "node successor id:", node.successor, "node predecessor id:", node.predecessor)
 			return
 		case timer := <-time.C: //timer
 			fmt.Println("TIMER ERROR:", timer)
@@ -171,14 +173,14 @@ func (dhtnode *DHTNode) stabilize() {
 
 func (dhtnode *DHTNode) stableTimmer() {
 	for {
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 5000)
 		dhtnode.createNewTask(nil, "stabilize")
 	}
 }
 
-func (dhtnode *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
+func (node *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
 	task := &Task{msg, typeOfTask}
-	dhtnode.TaskQ <- task
+	node.TaskQ <- task
 }
 
 func (node *DHTNode) setSucc(msg *Msg) {
@@ -192,8 +194,27 @@ func (node *DHTNode) setPred(msg *Msg) {
 }
 
 func (node *DHTNode) getPred(msg *Msg){
+	//fmt.Println("hej getpred")
+	//fmt.Println("src:",msg.Dst,"dst:", msg.Src,"node pred adress:", node.predecessor.adress,"node pred. node id:", node.predecessor.nodeId)
+	//fmt.Println("dst:", msg.Src)
+	//fmt.Println("node pred adress:", node.predecessor.adress)
+	//fmt.Println("node pred node id:", node.predecessor.nodeId)
+
+
+	responseMsg := responseMsg(msg.Dst, msg.Src, node.predecessor.adress, node.predecessor.nodeId)
+		
 	go func () {
-		responseMsg := responseMsg(msg.Dst, msg.Src, node.predecessor.adress, node.predecessor.nodeId)
 		node.transport.send(responseMsg)
+	}()
+}
+
+func (node *DHTNode) PrintRingProc(){
+	src := node.contact.ip + ":" + node.contact.port
+	go func(){
+		for {
+			time.Sleep(time.Second*2)
+			fmt.Println()
+			node.TaskQ <- &Task{printMessage(src,""),"printRing"}
+		}
 	}()
 }

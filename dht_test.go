@@ -5,6 +5,7 @@ package dht
 import (
 	//"fmt"
 	"testing"
+	"time"
 )
 
 
@@ -14,9 +15,9 @@ func TestDHT2(t *testing.T) {
 	id3 := "03"
 	id4 := "04"
 	id7 := "07"
-	id9 := "09"
+	id0 := "00"
 
-
+	node9 := makeDHTNode(&id0, "localhost", "1110")
 	node1 := makeDHTNode(&id1, "localhost", "1111")
 	node2 := makeDHTNode(&id2, "localhost", "1112")
 	node3 := makeDHTNode(&id3, "localhost", "1113")
@@ -24,8 +25,8 @@ func TestDHT2(t *testing.T) {
 //	node5 := makeDHTNode(nil, "localhost", "1115")
 //	node6 := makeDHTNode(nil, "localhost", "1116")
 	node7 := makeDHTNode(&id7, "localhost", "1117")
-//	node8 := makeDHTNode(nil, "localhost", "1118")
-	node9 := makeDHTNode(&id9, "localhost", "1119")
+
+	
 
 
 	//	key1 := "2b230fe12d1c9c60a8e489d028417ac89de57635"
@@ -54,11 +55,14 @@ func TestDHT2(t *testing.T) {
 	src := node1.contact.ip + ":" + node1.contact.port
 	//dst := node2.contact.ip + ":" + node2.contact.port
 	master := &tinyNode{node1.nodeId, src}
+	node1.PrintRingProc()
 	node2.join(master)
 	node3.join(master)
 	node7.join(master)
 	node9.join(master)
-	node1.TaskQ <- &Task{printMessage(src,""),"printRing"}
+	time.Sleep(time.Second*5)
+	
+
 	
 	node4.transport.listen()
 

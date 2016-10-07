@@ -57,21 +57,23 @@ func (transport *Transport) initmsgQ() {
 				//	transport.send(&Msg{"printRing", "", v.Src, []byte("tjuuu")})
 				case "reply": //test
 					fmt.Println("hej:", string(msg.Bytes))
-
 				case "printRing":
-					
 					transport.node.TaskQ <- &Task{msg, "printRing"} //transport.node.printRing()
 					//transport.send(&Msg{"ring", "", v.Src, []byte(transport.node.printRing())})
 				case "addToRing":
-					//transport.node.printRing()
+					transport.node.printNetworkRing(msg)
 				case "response":
-							transport.node.responseQ <- msg
+					transport.node.responseQ <- msg
 				case "join":
 					transport.node.TaskQ <-&Task{msg,"join"}
 				case "notify":
+			//		fmt.Println("notify network")
 					transport.node.notifyNetwork(msg)
+				case "pred":
+					transport.node.getPred(msg)
 				}
 			}
 		}
 	}()
 }
+
