@@ -52,7 +52,7 @@ func printMessage(origin, dst string) *Msg {
 	return msg
 }
 
-func notifyMessage(src, dst string) *Msg {
+func notifyMessage(src, dst, adress, id string) *Msg {
 	msg := &Msg{}
 	msg.Type = "notify"
 	msg.Adress = ""
@@ -87,4 +87,5 @@ func responseMsg(src, dst, adress, id string) *Msg {
 	msg.Dst = dst
 	msg.Bytes = nil
 	return msg
-}
+}	
+
