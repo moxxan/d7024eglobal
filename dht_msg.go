@@ -8,8 +8,8 @@ type Msg struct {
 	Src    string //från noden som kalla
 	Dst    string //destinationsadress
 	Bytes  []byte //transport funktionen, msg.Bytes
-	Adress string  //EVENTUELLT PEKA PÅ TINYNODE?
-	Id	   string
+	Adress string //EVENTUELLT PEKA PÅ TINYNODE?
+	Id     string
 	Type   string // type of message thats is being sent
 }
 
@@ -31,7 +31,7 @@ func joinMessage(dst string) *Msg {
 	msg.Type = "addToRing"
 	msg.Adress = ""
 	msg.Id = ""
-	msg.Origin = ""//origin?
+	msg.Origin = "" //origin?
 	msg.Src = ""
 	msg.Dst = dst
 	msg.Bytes = nil
@@ -77,7 +77,7 @@ func getNodeMessage(src, dst string) *Msg {
 	return msg
 }
 
-func responseMsg(src, dst, adress, id string) *Msg {
+func responseMessage(src, dst, adress, id string) *Msg {
 	msg := &Msg{}
 	msg.Type = "response"
 	msg.Adress = adress
@@ -87,5 +87,17 @@ func responseMsg(src, dst, adress, id string) *Msg {
 	msg.Dst = dst
 	msg.Bytes = nil
 	return msg
-}	
+}
 
+func lookUpMessage(origin, key, src, dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "lookup"
+	msg.Key = key
+	msg.Adress = ""
+	msg.Id = ""
+	msg.Origin = origin
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
