@@ -1,18 +1,55 @@
 package dht
 
 import (
-	"encoding/hex"
+//	"encoding/hex"
 //	"fmt"
 )
 
 const bits int = 4
 
+/*type FingerTable struct{
+	nodefingerlist [bits]*DHTNode
+}
+*/
 
 type FingerTable struct {
-	nodefingerlist [bits]*DHTNode
+	nodefingerlist [bits]*Finger
+}
+
+type Finger struct{
+	id 		string
+	adress	string
+	
+}
+
+func (node *DHTNode) setFingers (msg *Msg){
+	for i := 0; i < bits; i++ {
+		id := node.nodeId
+		adress := node.contact.ip+":"+node.contact.port
+		
+		//node.fingers.nodefingerlist[i] = &FingerTable{id,adress,"","","","","",""}
+		node.fingers.nodefingerlist[i] = &Finger{id,adress}
+		}
+}
+
+func (node *DHTNode) fingerTimer() {
+	for {
+		time.Sleep(time.Millisecond*3000)
+		node.createNewTask(nil,"updateFingers")
+	}	
 }
 
 
+
+
+
+
+
+
+
+
+
+/*
 func init_finger_table(n *DHTNode) [bits]*DHTNode{
 	var templist [bits]*DHTNode
 	for i := 0; i < bits; i++ {
@@ -27,13 +64,12 @@ func init_finger_table(n *DHTNode) [bits]*DHTNode{
 		templist[i] = succ
 
 	}
-	//fmt.Println("TEEMPLIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIST", templist)
-	//fmt.Println(templist)
-	return templist
+return templist
 }
+*/
 
 
-
+/*
 func updateFingers(node *DHTNode)  [bits]*DHTNode{
 	//var templist [bits]*DHTNode
 	for i := 0; i < bits; i++ {
@@ -42,15 +78,10 @@ func updateFingers(node *DHTNode)  [bits]*DHTNode{
 /*		if y == "" {
 			y = "00"
 		}
-*/
+
 		if (y == node.fingers.nodefingerlist[i].nodeId){
-			//fmt.Println(y,"=", node.fingers.nodefingerlist[i].nodeId)
 		} else {
-			
-			//fmt.Println(y,"!=", node.fingers.nodefingerlist[i].nodeId)
-			//fmt.Println("replacing y")
 			a := node.lookup(y)
-		//	fmt.Println("a = ",a)
 			node.fingers.nodefingerlist[i] = a
 	}
 
@@ -59,8 +90,4 @@ func updateFingers(node *DHTNode)  [bits]*DHTNode{
 }
 return node.fingers.nodefingerlist
 }
-
-/*func update_finger_table(s int, i int){
-}
 */
-
