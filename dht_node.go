@@ -49,9 +49,10 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	dhtNode.successor = &tinyNode{dhtNode.nodeId, ip + ":" + port}
 	dhtNode.predecessor = &tinyNode{"", ""}
 	dhtNode.fingers = new(FingerTable)
-	//KOMMENTERA DETTA SEN
-	// denna funkar ej V
+	//ska new användas eller raden under?
 	//dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
+	//eller denna kanske
+	//dhtNode.fingers = &FingerTable{}
 	dhtNode.createTransport()
 	dhtNode.responseQ = make(chan *Msg)
 	dhtNode.TaskQ = make(chan *Task)
@@ -220,6 +221,7 @@ func (node *DHTNode) PrintRingProc() {
 
 func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
+
 	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
 		if dhtnode.nodeId == msg.Key {
 			fmt.Println(dhtnode.nodeId)
@@ -247,4 +249,28 @@ func (node *DHTNode) initNetworkLookUp(key string, dhtnode *DHTNode) {
 	go func() {
 		dhtnode.transport.send(lookUpMsg)
 	}()
+}
+
+func (node *DHTNode) lookupFingers(msg *Msg){
+	src := node.contact.ip + ":" + node.contact.port
+	fingers := node.fingers.nodefingerlist
+	lenghtOfFingers := len(fingers)
+
+	//gå baklänges i fingertable
+	for i := lenghtOfFingers; i > 0; i-- {
+		//Fungerar fingers.nodeId här!?
+		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].nodeId), []byte(msg.Key))
+		if a {
+				return //return sats här?!
+			} else {
+				//contact.ip i slutet på fingers?
+				lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].contact.ip)
+				go func() { 
+					node.transport.send(lookUpMsg) 
+				}()
+			return //return sats här?!
+
+			}
+	}
+	return //return sats här?!
 }
