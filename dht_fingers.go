@@ -57,7 +57,7 @@ return templist
 }
 */
 
-func updateFingers(node *DHTNode) [bits]*DHTNode {
+func (node *DHTNode) updateFingers() {
 	nodeAdress := node.contact.ip + ":" + node.contact.port
 	for i := 0; i < bits; i++ {
 		x, _ := hex.DecodeString(node.nodeId)
@@ -69,10 +69,11 @@ func updateFingers(node *DHTNode) [bits]*DHTNode {
 			go func () {
 				node.transport.send(fingerMsg)
 			}()
-			for {
+			for { //GÖR CONDITION
 				select{
 				case r =: <- node.responseQ:
-					createdFinger := &Finger{r.}
+					createdFinger := &Finger{r.Id,r.Adress}
+					node.fingers.nodefingerlist[i]´= createdFinger
 				}
 			}
 		}
