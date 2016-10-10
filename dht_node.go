@@ -224,12 +224,10 @@ func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 
 	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
 		if dhtnode.nodeId == msg.Key {
-			fmt.Println("node", dhtnode.nodeId, "is responsible for key", msg.Key)
 			respMsg := responseMessage(nodeAdress, msg.Origin, nodeAdress, dhtnode.nodeId)
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
 		} else {
-			fmt.Println("node", dhtnode.successor.nodeId, "is responsible for key", msg.Key)
 			respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
