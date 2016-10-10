@@ -52,8 +52,8 @@ func (transport *Transport) initmsgQ() {
 			select {
 			case msg := <-transport.msgQ:
 				switch msg.Type {
-				case "hello": //test case
-					fmt.Println(string(msg.Bytes))
+				case "printRingFingers": //test case
+					transport.node.TaskQ <- &Task{msg, "printRingFingers"}
 				//	transport.send(&Msg{"printRing", "", v.Src, []byte("tjuuu")})
 				case "reply": //test
 					fmt.Println("hej:", string(msg.Bytes))

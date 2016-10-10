@@ -132,6 +132,8 @@ func (node *DHTNode) initTaskQ() {
 				case "stabilize":
 					//			fmt.Println("stabilize case: ", node.nodeId)
 					node.stabilize()
+				case "updateFingers":
+					node.updateFingers()
 				}
 			}
 		}
@@ -261,12 +263,12 @@ func (node *DHTNode) lookupFingers(msg *Msg){
 	//gå baklänges i fingertable
 	for i := lenghtOfFingers; i > 0; i-- {
 		//Fungerar fingers.nodeId här!?
-		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].nodeId), []byte(msg.Key))
+		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].id), []byte(msg.Key))
 		if a {
 				return //return sats här?!
 			} else {
 				//contact.ip i slutet på fingers?
-				lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].contact.ip)
+				lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].adress)
 				go func() { 
 					node.transport.send(lookUpMsg) 
 				}()

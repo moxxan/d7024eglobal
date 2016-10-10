@@ -7,19 +7,46 @@ import (
 
 const bits int = 4
 
+/*type FingerTable struct{
+	nodefingerlist [bits]*DHTNode
+}
+*/
 
 type FingerTable struct {
-	nodefingerlist [bits]*DHTNode
+	nodefingerlist [bits]*Finger
+}
+
+type Finger struct{
+	id 		string
+	adress	string
+	
 }
 
 func (node *DHTNode) setFingers (msg *Msg){
 	for i := 0; i < bits; i++ {
-		adress := msg.Adress
-		id := msg.Id
-		node.fingers.nodefingerlist[i] = &FingerTable{adress, id}
+		id := node.nodeId
+		adress := node.contact.ip+":"+node.contact.port
 		
-	}
+		//node.fingers.nodefingerlist[i] = &FingerTable{id,adress,"","","","","",""}
+		node.fingers.nodefingerlist[i] = &Finger{id,adress}
+		}
 }
+
+func (node *DHTNode) fingerTimer() {
+	for {
+		time.Sleep(time.Millisecond*3000)
+		node.createNewTask(nil,"updateFingers")
+	}	
+}
+
+
+
+
+
+
+
+
+
 
 
 /*
