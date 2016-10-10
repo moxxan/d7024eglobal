@@ -101,3 +101,16 @@ func lookUpMessage(origin, key, src, dst string) *Msg {
 	msg.Bytes = nil
 	return msg
 }
+
+func fingerLookUpMessage(origin, key, src, dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "fingerLookup"
+	msg.Key = key
+	msg.Adress = ""
+	msg.Id = ""
+	msg.Origin = origin
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}

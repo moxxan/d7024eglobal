@@ -224,12 +224,12 @@ func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 
 	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
 		if dhtnode.nodeId == msg.Key {
-			fmt.Println(dhtnode.nodeId)
+			fmt.Println("node", dhtnode.nodeId, "is responsible for key", msg.Key)
 			respMsg := responseMessage(nodeAdress, msg.Origin, nodeAdress, dhtnode.nodeId)
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
 		} else {
-			fmt.Println(dhtnode.successor.nodeId)
+			fmt.Println("node", dhtnode.successor.nodeId, "is responsible for key", msg.Key)
 			respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
@@ -251,7 +251,7 @@ func (node *DHTNode) initNetworkLookUp(key string, dhtnode *DHTNode) {
 	}()
 }
 
-func (node *DHTNode) lookupFingers(msg *Msg){
+func (node *DHTNode) lookupFingers(msg *Msg) {
 	src := node.contact.ip + ":" + node.contact.port
 	fingers := node.fingers.nodefingerlist
 	lenghtOfFingers := len(fingers)
@@ -261,16 +261,16 @@ func (node *DHTNode) lookupFingers(msg *Msg){
 		//Fungerar fingers.nodeId här!?
 		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].nodeId), []byte(msg.Key))
 		if a {
-				return //return sats här?!
-			} else {
-				//contact.ip i slutet på fingers?
-				lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].contact.ip)
-				go func() { 
-					node.transport.send(lookUpMsg) 
-				}()
+			return //return sats här?!
+		} else {
+			//contact.ip i slutet på fingers?
+			lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].contact.ip)
+			go func() {
+				node.transport.send(lookUpMsg)
+			}()
 			return //return sats här?!
 
-			}
+		}
 	}
 	return //return sats här?!
 }
