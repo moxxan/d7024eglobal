@@ -65,15 +65,17 @@ func (transport *Transport) initmsgQ() {
 				case "response":
 					transport.node.responseQ <- msg
 				case "join":
-					transport.node.TaskQ <-&Task{msg,"join"}
+					transport.node.TaskQ <- &Task{msg, "join"}
 				case "notify":
-			//		fmt.Println("notify network")
+					//		fmt.Println("notify network")
 					transport.node.notifyNetwork(msg)
 				case "pred":
 					transport.node.getPred(msg)
+				case "lookup":
+					fmt.Println("initmsgQ lookup: ")
+					go transport.node.networkLookup(msg)
 				}
 			}
 		}
 	}()
 }
-

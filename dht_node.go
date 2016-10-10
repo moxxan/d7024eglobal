@@ -47,7 +47,7 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	}
 
 	dhtNode.successor = &tinyNode{dhtNode.nodeId, ip + ":" + port}
-	dhtNode.predecessor = &tinyNode{"",""}
+	dhtNode.predecessor = &tinyNode{"", ""}
 	dhtNode.fingers = new(FingerTable)
 	//KOMMENTERA DETTA SEN
 	// denna funkar ej V
@@ -129,7 +129,7 @@ func (node *DHTNode) initTaskQ() {
 					node.findSucc(t.message)
 
 				case "stabilize":
-		//			fmt.Println("stabilize case: ", node.nodeId)
+					//			fmt.Println("stabilize case: ", node.nodeId)
 					node.stabilize()
 				}
 			}
@@ -146,14 +146,14 @@ func (node *DHTNode) stabilize() {
 		select {
 		case r := <-node.responseQ:
 			//fmt.Println("case 1 stab: ")
-			
+
 			between := (between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(r.Key))) && r.Key != "" //r.key = "" för att connecta sista nodens successor
 			if between {
 				node.successor.adress = r.Src //origin eller source
 				//node.successor.adress = msg.Origin
 				//node.successor.nodeId = msg.Key
 				node.successor.nodeId = r.Key
-			//	fmt.Println("beetween")
+				//	fmt.Println("beetween")
 				return
 			}
 			//ska notifymessage ha fler variabler?
@@ -162,7 +162,7 @@ func (node *DHTNode) stabilize() {
 			go func() {
 				node.transport.send(N)
 			}()
-		//	fmt.Println("node id:", node.nodeId, "node successor id:", node.successor, "node predecessor id:", node.predecessor)
+			//	fmt.Println("node id:", node.nodeId, "node successor id:", node.successor, "node predecessor id:", node.predecessor)
 			return
 		case timer := <-time.C: //timer
 			fmt.Println("TIMER ERROR:", timer)
@@ -184,37 +184,59 @@ func (node *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
 }
 
 func (node *DHTNode) setSucc(msg *Msg) {
-		node.successor.adress = msg.Src
-		node.successor.nodeId = msg.Key
+	node.successor.adress = msg.Src
+	node.successor.nodeId = msg.Key
 }
 
 func (node *DHTNode) setPred(msg *Msg) {
-		node.predecessor.adress = msg.Src
-		node.predecessor.nodeId = msg.Key
+	node.predecessor.adress = msg.Src
+	node.predecessor.nodeId = msg.Key
 }
 
-func (node *DHTNode) getPred(msg *Msg){
+func (node *DHTNode) getPred(msg *Msg) {
 	//fmt.Println("hej getpred")
 	//fmt.Println("src:",msg.Dst,"dst:", msg.Src,"node pred adress:", node.predecessor.adress,"node pred. node id:", node.predecessor.nodeId)
 	//fmt.Println("dst:", msg.Src)
 	//fmt.Println("node pred adress:", node.predecessor.adress)
 	//fmt.Println("node pred node id:", node.predecessor.nodeId)
 
+	responseMsg := responseMessage(msg.Dst, msg.Src, node.predecessor.adress, node.predecessor.nodeId)
 
-	responseMsg := responseMsg(msg.Dst, msg.Src, node.predecessor.adress, node.predecessor.nodeId)
-		
-	go func () {
+	go func() {
 		node.transport.send(responseMsg)
 	}()
 }
 
-func (node *DHTNode) PrintRingProc(){
+func (node *DHTNode) PrintRingProc() {
 	src := node.contact.ip + ":" + node.contact.port
-	go func(){
+	go func() {
 		for {
-			time.Sleep(time.Second*2)
+			time.Sleep(time.Second * 2)
 			fmt.Println()
-			node.TaskQ <- &Task{printMessage(src,""),"printRing"}
+			node.TaskQ <- &Task{printMessage(src, ""), "printRing"}
 		}
+	}()
+}
+
+func (dhtnode *DHTNode) networkLookup(msg *Msg) {
+	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
+	fmt.Println(msg.Id)
+	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
+		fmt.Println("lookup between ")
+		respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
+		go func() { dhtnode.transport.send(respMsg) }()
+	} else {
+		fmt.Println("lookup selse ")
+		lookUpMsg := lookUpMessage(msg.Origin, msg.Key, nodeAdress, dhtnode.successor.adress)
+		go func() { dhtnode.transport.send(lookUpMsg) }()
+	}
+	fmt.Println()
+}
+
+//skicka till taskQ!!!
+func (node *DHTNode) initNetworkLookUp(key string, dhtnode *DHTNode) {
+	lookUpMsg := lookUpMessage(node.transport.bindAddress, key, node.transport.bindAddress, dhtnode.transport.bindAddress)
+	go func() {
+		dhtnode.transport.send(lookUpMsg)
 	}()
 }

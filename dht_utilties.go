@@ -104,4 +104,3 @@ func generateNodeId() string {
 
 	return fmt.Sprintf("%x", hasher.Sum(nil))
 }
-

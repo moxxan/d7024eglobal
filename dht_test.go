@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-
 func TestDHT2(t *testing.T) {
 	id1 := "01"
 	id2 := "02"
@@ -17,17 +16,14 @@ func TestDHT2(t *testing.T) {
 	id7 := "07"
 	id0 := "00"
 
-	node9 := makeDHTNode(&id0, "localhost", "1110")
+	node0 := makeDHTNode(&id0, "localhost", "1110")
 	node1 := makeDHTNode(&id1, "localhost", "1111")
 	node2 := makeDHTNode(&id2, "localhost", "1112")
 	node3 := makeDHTNode(&id3, "localhost", "1113")
 	node4 := makeDHTNode(&id4, "localhost", "1114")
-//	node5 := makeDHTNode(nil, "localhost", "1115")
-//	node6 := makeDHTNode(nil, "localhost", "1116")
+	//	node5 := makeDHTNode(nil, "localhost", "1115")
+	//	node6 := makeDHTNode(nil, "localhost", "1116")
 	node7 := makeDHTNode(&id7, "localhost", "1117")
-
-	
-
 
 	//	key1 := "2b230fe12d1c9c60a8e489d028417ac89de57635"
 	//	key2 := "87adb987ebbd55db2c5309fd4b23203450ab0083"
@@ -50,20 +46,20 @@ func TestDHT2(t *testing.T) {
 	node2.start_server()
 	node3.start_server()
 	node7.start_server()
-	node9.start_server()
+	node0.start_server()
 
 	src := node1.contact.ip + ":" + node1.contact.port
 	//dst := node2.contact.ip + ":" + node2.contact.port
 	master := &tinyNode{node1.nodeId, src}
-	node1.PrintRingProc()
+	//node1.PrintRingProc()
 	node2.join(master)
 	node3.join(master)
+	node0.join(master)
 	node7.join(master)
-	node9.join(master)
-	time.Sleep(time.Second*5)
-	
+	time.Sleep(time.Second * 5)
 
-	
+	node1.initNetworkLookUp("04", node2)
+
 	node4.transport.listen()
 
 }
