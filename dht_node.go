@@ -232,11 +232,15 @@ func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 		}
 		fmt.Println("lookup between ")
 		respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
-		go func() { dhtnode.transport.send(respMsg) }()
+		go func() { 
+			dhtnode.transport.send(respMsg) 
+		}()
 	} else {
 		fmt.Println("lookup else ")
 		lookUpMsg := lookUpMessage(msg.Origin, msg.Key, nodeAdress, dhtnode.successor.adress)
-		go func() { dhtnode.transport.send(lookUpMsg) }()
+		go func() {
+		 dhtnode.transport.send(lookUpMsg) 
+		 }()
 	}
 	//fmt.Println(dhtnode.successor.nodeId)
 }
@@ -267,9 +271,10 @@ func (node *DHTNode) lookupFingers(msg *Msg){
 				go func() { 
 					node.transport.send(lookUpMsg) 
 				}()
-			return //return sats här?!
+			//return //return sats här?!
 
 			}
 	}
 	return //return sats här?!
 }
+
