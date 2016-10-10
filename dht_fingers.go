@@ -12,6 +12,15 @@ type FingerTable struct {
 	nodefingerlist [bits]*DHTNode
 }
 
+func (node *DHTNode) setFingers (msg *Msg){
+	for i := 0; i < bits; i++ {
+		adress := msg.Adress
+		id := msg.Id
+		node.fingers.nodefingerlist[i] = &FingerTable{adress, id}
+		
+	}
+}
+
 
 /*
 func init_finger_table(n *DHTNode) [bits]*DHTNode{
