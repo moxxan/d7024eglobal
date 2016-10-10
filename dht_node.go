@@ -231,7 +231,6 @@ func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
 		} else {
-			fmt.Println(dhtnode.successor.nodeId)
 			respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
