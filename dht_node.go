@@ -212,70 +212,6 @@ func (node *DHTNode) getPred(msg *Msg) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func (node *DHTNode) PrintRingProc() {
 	src := node.contact.ip + ":" + node.contact.port
 	go func() {
@@ -292,7 +228,6 @@ func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 
 	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
 		if dhtnode.nodeId == msg.Key {
-			fmt.Println(dhtnode.nodeId)
 			respMsg := responseMessage(nodeAdress, msg.Origin, nodeAdress, dhtnode.nodeId)
 			go func() { dhtnode.transport.send(respMsg) }()
 			//return
