@@ -221,22 +221,30 @@ func (node *DHTNode) PrintRingProc() {
 
 func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 	nodeAdress := dhtnode.contact.ip + ":" + dhtnode.contact.port
-	fmt.Println(msg.Id)
-	fmt.Println("node id:", dhtnode.nodeId, "node successor id:", dhtnode.successor.nodeId,"msg.Key:",msg.Key)
+
 	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
-	//	fmt.Println("lookup between ")
+		if dhtnode.nodeId == msg.Key {
+			fmt.Println(dhtnode.nodeId)
+			return
+		} else {
+			fmt.Println(dhtnode.successor.nodeId)
+			return
+		}
+		fmt.Println("lookup between ")
 		respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
 		go func() { dhtnode.transport.send(respMsg) }()
 	} else {
-	//	fmt.Println("lookup else ")
+		fmt.Println("lookup else ")
 		lookUpMsg := lookUpMessage(msg.Origin, msg.Key, nodeAdress, dhtnode.successor.adress)
 		go func() { dhtnode.transport.send(lookUpMsg) }()
 	}
+	//fmt.Println(dhtnode.successor.nodeId)
 }
 
 //skicka till taskQ!!!
 func (node *DHTNode) initNetworkLookUp(key string, dhtnode *DHTNode) {
 	lookUpMsg := lookUpMessage(node.transport.bindAddress, key, node.transport.bindAddress, dhtnode.transport.bindAddress)
+	fmt.Println("hej")
 	go func() {
 		dhtnode.transport.send(lookUpMsg)
 	}()
