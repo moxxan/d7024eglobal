@@ -225,16 +225,15 @@ func (dhtnode *DHTNode) networkLookup(msg *Msg) {
 	if between([]byte(dhtnode.nodeId), []byte(dhtnode.successor.nodeId), []byte(msg.Key)) {
 		if dhtnode.nodeId == msg.Key {
 			fmt.Println(dhtnode.nodeId)
-			return
+			respMsg := responseMessage(nodeAdress, msg.Origin, nodeAdress, dhtnode.nodeId)
+			go func() { dhtnode.transport.send(respMsg) }()
+			//return
 		} else {
 			fmt.Println(dhtnode.successor.nodeId)
-			return
+			respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
+			go func() { dhtnode.transport.send(respMsg) }()
+			//return
 		}
-		fmt.Println("lookup between ")
-		respMsg := responseMessage(nodeAdress, msg.Origin, dhtnode.successor.adress, dhtnode.successor.nodeId)
-		go func() { 
-			dhtnode.transport.send(respMsg) 
-		}()
 	} else {
 		fmt.Println("lookup else ")
 		lookUpMsg := lookUpMessage(msg.Origin, msg.Key, nodeAdress, dhtnode.successor.adress)
