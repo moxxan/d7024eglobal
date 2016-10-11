@@ -34,7 +34,7 @@ func (node *DHTNode) setFingers(msg *Msg) {
 
 func (node *DHTNode) fingerTimer() {
 	for {
-		time.Sleep(time.Millisecond * 3000)
+		time.Sleep(time.Second * 3)
 		node.createNewTask(nil, "updateFingers")
 	}
 }
