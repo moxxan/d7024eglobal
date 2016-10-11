@@ -1,8 +1,9 @@
 package dht
 
 import (
-//	"encoding/hex"
-//	"fmt"
+	"encoding/hex"
+	"fmt"
+	"time"
 )
 
 const bits int = 4
@@ -57,22 +58,34 @@ return templist
 }
 */
 
-func updateFingers(node *DHTNode) [bits]*DHTNode {
+func (node *DHTNode) updateFingers() {
 	nodeAdress := node.contact.ip + ":" + node.contact.port
 	for i := 0; i < bits; i++ {
 		x, _ := hex.DecodeString(node.nodeId)
 		y, _ := calcFinger(x, (i + 1), bits)
+		booleanResponseTest := false
 		if y == "" {
 			y = "00"
 		} else {
+			responseTimmer := time.NewTimer(time.Second * 3)
 			fingerMsg := fingerLookUpMessage(nodeAdress, y, nodeAdress, node.successor.adress)
 			go func() {
 				node.transport.send(fingerMsg)
 			}()
-			for {
+
+			for booleanResponseTest != true {
 				select {
+
 				case responseCase := <-node.responseQ:
 					createdFinger := &Finger{responseCase.Adress, responseCase.Id} //id eller key?
+					node.fingers.nodefingerlist[i] = createdFinger
+					booleanResponseTest = true
+
+				case e := <-responseTimmer.C:
+
+					fmt.Println(e, "timeout: ")
+					booleanResponseTest = true
+
 				}
 			}
 		}
