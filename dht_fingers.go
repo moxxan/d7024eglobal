@@ -22,7 +22,7 @@ type Finger struct {
 	adress string
 }
 
-func (node *DHTNode) setFingers(msg *Msg) {
+func (node *DHTNode) setNetworkFingers(msg *Msg) {
 	for i := 0; i < bits; i++ {
 		id := node.nodeId
 		adress := node.contact.ip + ":" + node.contact.port
@@ -39,7 +39,7 @@ func (node *DHTNode) fingerTimer() {
 	}
 }
 
-func (node *DHTNode) updateFingers() {
+func (node *DHTNode) updateNetworkFingers() {
 	nodeAdress := node.contact.ip + ":" + node.contact.port
 	for i := 0; i < bits; i++ {
 		x, _ := hex.DecodeString(node.nodeId)
@@ -68,5 +68,12 @@ func (node *DHTNode) updateFingers() {
 				}
 			}
 		}
+	}
+}
+
+func (node *DHTNode) printNetworkFingers() {
+	len_list := len(node.fingers.nodefingerlist)
+	for i := 0; i < len_list; i++ {
+		fmt.Println(node.fingers.nodefingerlist[i])
 	}
 }
