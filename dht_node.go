@@ -106,6 +106,7 @@ func (node *DHTNode) printNetworkRing(msg *Msg) {
 func (dhtNode *DHTNode) start_server() {
 	go dhtNode.initTaskQ()
 	go dhtNode.stableTimmer()
+	go dhtNode.fingerTimer()
 	go dhtNode.transport.listen()
 }
 
