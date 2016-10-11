@@ -64,23 +64,22 @@ func updateFingers(node *DHTNode) [bits]*DHTNode {
 		y, _ := calcFinger(x, (i + 1), bits)
 		if y == "" {
 			y = "00"
-		} else{
+		} else {
 			fingerMsg := fingerLookUpMessage(nodeAdress, y, nodeAdress, node.successor.adress)
-			go func () {
+			go func() {
 				node.transport.send(fingerMsg)
 			}()
 			for {
-				select{
-				case r =: <- node.responseQ:
-					createdFinger := &Finger{r.}
+				select {
+				case responseCase := <-node.responseQ:
+					createdFinger := &Finger{responseCase.Adress, responseCase.Id} //id eller key?
 				}
 			}
 		}
 	}
 }
 
-
-		/*if y == node.fingers.nodefingerlist[i].nodeId {
+/*if y == node.fingers.nodefingerlist[i].nodeId {
 		} else {
 			a := node.lookup(y)
 			node.fingers.nodefingerlist[i] = a
