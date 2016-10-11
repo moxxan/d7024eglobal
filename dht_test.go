@@ -62,4 +62,8 @@ func TestDHT2(t *testing.T) {
 
 	node4.transport.listen()
 
+
+//Glöm inte lägga till en timer på "20000sek" så inte allt dör.
+
+
 }

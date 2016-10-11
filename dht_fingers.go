@@ -16,38 +16,27 @@ type FingerTable struct {
 	nodefingerlist [bits]*Finger
 }
 
-type Finger struct{
-	id 		string
-	adress	string
-	
+type Finger struct {
+	id     string
+	adress string
 }
 
-func (node *DHTNode) setFingers (msg *Msg){
+func (node *DHTNode) setFingers(msg *Msg) {
 	for i := 0; i < bits; i++ {
 		id := node.nodeId
-		adress := node.contact.ip+":"+node.contact.port
-		
+		adress := node.contact.ip + ":" + node.contact.port
+
 		//node.fingers.nodefingerlist[i] = &FingerTable{id,adress,"","","","","",""}
-		node.fingers.nodefingerlist[i] = &Finger{id,adress}
-		}
+		node.fingers.nodefingerlist[i] = &Finger{id, adress}
+	}
 }
 
 func (node *DHTNode) fingerTimer() {
 	for {
-		time.Sleep(time.Millisecond*3000)
-		node.createNewTask(nil,"updateFingers")
-	}	
+		time.Sleep(time.Millisecond * 3000)
+		node.createNewTask(nil, "updateFingers")
+	}
 }
-
-
-
-
-
-
-
-
-
-
 
 /*
 func init_finger_table(n *DHTNode) [bits]*DHTNode{
@@ -68,26 +57,35 @@ return templist
 }
 */
 
-
-/*
-func updateFingers(node *DHTNode)  [bits]*DHTNode{
-	//var templist [bits]*DHTNode
+func (node *DHTNode) updateFingers() {
+	nodeAdress := node.contact.ip + ":" + node.contact.port
 	for i := 0; i < bits; i++ {
-		x,_ := hex.DecodeString(node.nodeId)
-		y, _ := calcFinger(x, (i+1), bits)
-/*		if y == "" {
+		x, _ := hex.DecodeString(node.nodeId)
+		y, _ := calcFinger(x, (i + 1), bits)
+		if y == "" {
 			y = "00"
+		} else{
+			fingerMsg := fingerLookUpMessage(nodeAdress, y, nodeAdress, node.successor.adress)
+			go func () {
+				node.transport.send(fingerMsg)
+			}()
+			for { //GÖR CONDITION
+				select{
+				case r =: <- node.responseQ:
+					createdFinger := &Finger{r.Id,r.Adress}
+					node.fingers.nodefingerlist[i]´= createdFinger
+				}
+			}
 		}
+	}
+}
 
-		if (y == node.fingers.nodefingerlist[i].nodeId){
+
+		/*if y == node.fingers.nodefingerlist[i].nodeId {
 		} else {
 			a := node.lookup(y)
 			node.fingers.nodefingerlist[i] = a
+		}
 	}
-
-
-	
-}
-return node.fingers.nodefingerlist
-}
-*/
+	return node.fingers.nodefingerlist
+}*/

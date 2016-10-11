@@ -210,8 +210,6 @@ func (node *DHTNode) getPred(msg *Msg) {
 	}()
 }
 
-
-
 func (node *DHTNode) PrintRingProc() {
 	src := node.contact.ip + ":" + node.contact.port
 	go func() {
@@ -253,7 +251,7 @@ func (node *DHTNode) initNetworkLookUp(key string, dhtnode *DHTNode) {
 	}()
 }
 
-func (node *DHTNode) lookupFingers(msg *Msg){
+func (node *DHTNode) lookupFingers(msg *Msg) {
 	src := node.contact.ip + ":" + node.contact.port
 	fingers := node.fingers.nodefingerlist
 	lenghtOfFingers := len(fingers)
@@ -263,17 +261,16 @@ func (node *DHTNode) lookupFingers(msg *Msg){
 		//Fungerar fingers.nodeId här!?
 		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].id), []byte(msg.Key))
 		if a {
-				return //return sats här?!
-			} else {
-				//contact.ip i slutet på fingers?
-				lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].adress)
-				go func() { 
-					node.transport.send(lookUpMsg) 
-				}()
+			return //return sats här?!
+		} else {
+			//contact.ip i slutet på fingers?
+			lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].adress)
+			go func() {
+				node.transport.send(lookUpMsg)
+			}()
 			//return //return sats här?!
 
-			}
+		}
 	}
 	return //return sats här?!
 }
-
