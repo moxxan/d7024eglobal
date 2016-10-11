@@ -72,7 +72,6 @@ func (node *DHTNode) updateFingers() {
 			go func() {
 				node.transport.send(fingerMsg)
 			}()
-
 			for booleanResponseTest != true {
 				select {
 
@@ -85,7 +84,6 @@ func (node *DHTNode) updateFingers() {
 
 					fmt.Println(e, "timeout: ")
 					booleanResponseTest = true
-
 				}
 			}
 		}
