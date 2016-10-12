@@ -80,9 +80,9 @@ func (node *DHTNode) PrintOutNetworkFingers() {
 
 func (node *DHTNode) printNetworkFingers(msg *Msg) {
 	if msg.Origin != msg.Dst {
-		fmt.Println("finger for node: ", node.nodeId, "is (")
+		fmt.Println("finger for node: ", node.nodeId, "is <")
 		node.PrintOutNetworkFingers()
-		fmt.Println(")")
+		fmt.Println(">")
 		fingerPrintMsg := fingerPrintMessage(msg.Origin, node.successor.adress)
 		go func() { node.transport.send(fingerPrintMsg) }()
 	} else {
