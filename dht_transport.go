@@ -72,7 +72,7 @@ func (transport *Transport) initmsgQ() {
 				case "pred":
 					transport.node.getPred(msg)
 				case "lookup":
-					fmt.Println("initmsgQ lookup: ")
+					//fmt.Println("initmsgQ lookup: ")
 					go transport.node.networkLookup(msg)
 				}
 			}

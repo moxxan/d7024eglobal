@@ -49,7 +49,7 @@ func (node *DHTNode) updateNetworkFingers() {
 			y = "00"
 		} else {
 			responseTimmer := time.NewTimer(time.Second * 3)
-			fingerMsg := fingerLookUpMessage(nodeAdress, y, nodeAdress, node.successor.adress)
+			fingerMsg := lookUpMessage(nodeAdress, y, nodeAdress, node.successor.adress)
 			go func() {
 				node.transport.send(fingerMsg)
 			}()
