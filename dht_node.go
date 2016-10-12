@@ -274,3 +274,6 @@ func (node *DHTNode) lookupFingers(msg *Msg) {
 	}
 	return //return sats här?!
 }
+
+
+/* vår stabilize och vår join är typ samma? case i båda wtf?.

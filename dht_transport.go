@@ -51,6 +51,13 @@ func (transport *Transport) initmsgQ() {
 		for {
 			select {
 			case msg := <-transport.msgQ:
+
+
+				/* Vi har inge setfingers, fingerlookup och lookup
+					ligger på samma typ av case, vi har  ingen 
+					setfingers, setsuccessor
+				*/
+
 				switch msg.Type {
 				case "fingerPrint": //test case
 					transport.node.printNetworkFingers(msg)
