@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const bits int = 4
+const bits int = 3
 
 /*type FingerTable struct{
 	nodefingerlist [bits]*DHTNode
