@@ -26,7 +26,6 @@ func message(t, origin, dst, src, key string, bytes []byte) *Msg {
 	return msg
 }
 
-// ANVÄNDS ALDRIG!!!!!!!!!!!!!!
 func joinMessage(dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "addToRing"
@@ -127,13 +126,4 @@ func fingerPrintMessage(origin, dst string) *Msg {
 	msg.Dst = dst
 	msg.Bytes = nil
 	return msg
-}
-
-func setFinger(src, dst string) *Msg{
-	Msg := &Msg{}
-	Msg.Type = "finger"
-	Msg.Src = src
-	Msg.Dst = dst
-	Msg.Bytes = nil
-	return Msg
 }
