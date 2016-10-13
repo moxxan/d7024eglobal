@@ -149,6 +149,7 @@ func (node *DHTNode) stabilize() {
 	for {
 		select {
 		case r := <-node.responseQ:
+			fmt.Println("stabilize")
 			//fmt.Println("case 1 stab: ")
 
 			between := (between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(r.Key))) && r.Key != "" //r.key = "" för att connecta sista nodens successor
@@ -259,21 +260,23 @@ func (node *DHTNode) lookupFingers(msg *Msg) {
 	//gå baklänges i fingertable
 	for i := lenghtOfFingers; i > 0; i-- {
 		//Fungerar fingers.nodeId här!?
+		fmt.Println("ligger node id:", node.nodeId,"mellan finger id",fingers[(i-1)].id,"och msg.Key:",msg.Key)
 		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].id), []byte(msg.Key))
-		if a {
-			return //return sats här?!
-		} else {
+		if !(a) {
 			//contact.ip i slutet på fingers?
-			lookUpMsg := lookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].adress)
-			go func() {
-				node.transport.send(lookUpMsg)
+			fmt.Println("den låg ej emellan, in och kör lookup message")
+			fingerLookUpMessage := fingerLookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].adress)
+			go func() {	
+				node.transport.send(fingerLookUpMessage)
 			}()
-			//return //return sats här?!
-
-		}
+			return //return sats här?!
+		} 
 	}
+	
 	return //return sats här?!
 }
 
 
-/* vår stabilize och vår join är typ samma? case i båda wtf?.
+/* vår stabilize och vår join är typ samma? case i båda wtf?.*/
+
+

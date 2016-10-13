@@ -58,8 +58,11 @@ func TestDHT2(t *testing.T) {
 	node7.join(master)
 	time.Sleep(time.Second * 5)
 
+	node7.initLookUpNetworkFingers("07", node7)
+	//node1.initPrintNetworkFingers(node2)
+
 	//node1.initNetworkLookUp("04", node2)
-	node1.initPrintNetworkFingers(node2)
+	//node1.initPrintNetworkFingers(node2)
 
 	node4.transport.listen()
 

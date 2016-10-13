@@ -137,3 +137,11 @@ func setFinger(src, dst string) *Msg{
 	Msg.Bytes = nil
 	return Msg
 }
+
+func updateSucc(dst, adress, id string) *Msg{
+	Msg := &Msg{}
+	Msg.Dst = dst
+	Msg.Adress = adress
+	Msg.Id = id
+	return Msg
+}

@@ -57,7 +57,7 @@ func (node *DHTNode) updateNetworkFingers() {
 				select {
 
 				case responseCase := <-node.responseQ:
-					createdFinger := &Finger{responseCase.Adress, responseCase.Id} //id eller key?
+					createdFinger := &Finger{responseCase.Id, responseCase.Adress} //id eller key?
 					node.fingers.nodefingerlist[i] = createdFinger
 					booleanResponseTest = true
 
@@ -99,6 +99,15 @@ func (dhtnode *DHTNode) initPrintNetworkFingers(node *DHTNode) {
 	}()
 }
 
+func (node *DHTNode) initLookUpNetworkFingers(key string, dhtnode *DHTNode) {
+	fingerLookUpMsg := fingerLookUpMessage(node.transport.bindAddress, key, node.transport.bindAddress, dhtnode.transport.bindAddress)
+	fmt.Println("Finger lookup")
+	go func() {
+		dhtnode.transport.send(fingerLookUpMsg)
+	}()
+}
+
 
 
 /*fingers klart*/
+
