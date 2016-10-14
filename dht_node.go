@@ -22,6 +22,8 @@ type DHTNode struct {
 	transport   *Transport
 	responseQ   chan *Msg
 	TaskQ       chan *Task
+	heartBeatQ  chan *Msg
+	alive       bool
 }
 
 type tinyNode struct {
@@ -38,6 +40,7 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	dhtNode := new(DHTNode)
 	dhtNode.contact.ip = ip
 	dhtNode.contact.port = port
+	dhtNode.alive = true
 
 	if nodeId == nil {
 		genNodeId := generateNodeId()
@@ -56,6 +59,7 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	dhtNode.createTransport()
 	dhtNode.responseQ = make(chan *Msg)
 	dhtNode.TaskQ = make(chan *Task)
+	dhtNode.heartBeatQ = make(chan *Msg)
 	return dhtNode
 }
 
@@ -104,6 +108,7 @@ func (node *DHTNode) printNetworkRing(msg *Msg) {
 }
 
 func (dhtNode *DHTNode) start_server() {
+	go dhtNode.heartTimer()
 	go dhtNode.initTaskQ()
 	go dhtNode.stableTimmer()
 	go dhtNode.fingerTimer()
@@ -135,6 +140,9 @@ func (node *DHTNode) initTaskQ() {
 					node.stabilize()
 				case "updateFingers":
 					node.updateNetworkFingers()
+
+				case "heartBeat":
+					node.heartBeat()
 				}
 			}
 		}
@@ -177,14 +185,18 @@ func (node *DHTNode) stabilize() {
 
 func (dhtnode *DHTNode) stableTimmer() {
 	for {
-		time.Sleep(time.Millisecond * 5000)
-		dhtnode.createNewTask(nil, "stabilize")
+		if dhtnode.isTheNodeAlive() {
+			time.Sleep(time.Millisecond * 5000)
+			dhtnode.createNewTask(nil, "stabilize")
+		}
 	}
 }
 
 func (node *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
-	task := &Task{msg, typeOfTask}
-	node.TaskQ <- task
+	if node.isTheNodeAlive() {
+		task := &Task{msg, typeOfTask}
+		node.TaskQ <- task
+	}
 }
 
 func (node *DHTNode) setSucc(msg *Msg) {
@@ -254,28 +266,19 @@ func (node *DHTNode) initNetworkLookUp(key string, dhtnode *DHTNode) {
 	}()
 }
 
-/*func (node *DHTNode) lookupFingers(msg *Msg) {
-	src := node.contact.ip + ":" + node.contact.port
-	fingers := node.fingers.nodefingerlist
-	lenghtOfFingers := len(fingers)
+func (dhtnode *DHTNode) killTheNode() {
+	fmt.Println("killing node ", dhtnode.nodeId)
+	dhtnode.alive = false
+	dhtnode.successor.nodeId = ""
+	dhtnode.successor.adress = ""
+	dhtnode.predecessor.adress = ""
+	dhtnode.predecessor.nodeId = ""
+}
 
-	//gå baklänges i fingertable
-	for i := lenghtOfFingers; i > 0; i-- {
-		//Fungerar fingers.nodeId här!?
-		//fmt.Println(node.successor.nodeId)
-		//fmt.Println("ndoe id, finger id, key")
-		var a = between([]byte(node.nodeId), []byte(fingers[(i-1)].id), []byte(msg.Key))
-		if !(a) {
-			fmt.Println("else between")
-			fmt.Println(node.nodeId)
-			//contact.ip i slutet på fingers?
-			FingerLookUpMsg := fingerLookUpMessage(msg.Origin, msg.Key, src, fingers[(i-1)].adress)
-			go func() {
-				node.transport.send(FingerLookUpMsg)
-			}()
-			//return //return sats här?!
-			return //return sats här?!
-		}
+func (dhtnode *DHTNode) isTheNodeAlive() bool {
+	if dhtnode.alive == true {
+		return true
+	} else {
+		return false
 	}
-	//return //return sats här?!
-}*/
+}
