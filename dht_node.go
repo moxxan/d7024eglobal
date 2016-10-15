@@ -50,7 +50,7 @@ func makeDHTNode(nodeId *string, ip string, port string) *DHTNode {
 	}
 
 	dhtNode.successor = &tinyNode{dhtNode.nodeId, ip + ":" + port}
-	dhtNode.predecessor = &tinyNode{"", ""}
+	dhtNode.predecessor = &tinyNode{dhtNode.nodeId, ip + ":" + port}
 	dhtNode.fingers = new(FingerTable)
 	//ska new användas eller raden under?
 	//dhtNode.fingers.nodefingerlist = [bits]*DHTNode{}
@@ -143,6 +143,7 @@ func (node *DHTNode) initTaskQ() {
 
 				case "heartBeat":
 					node.heartBeat()
+				
 				}
 			}
 		}
@@ -159,21 +160,19 @@ func (node *DHTNode) stabilize() {
 		case r := <-node.responseQ:
 			//fmt.Println("case 1 stab: ")
 
-			between := (between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(r.Key))) && r.Key != "" //r.key = "" för att connecta sista nodens successor
+			between := ((between([]byte(node.nodeId), []byte(node.successor.nodeId), []byte(r.Key))) && r.Key != "" && node.nodeId != r.Key) //r.key = "" för att connecta sista nodens successor
 			if between {
 				node.successor.adress = r.Src //origin eller source
 				//node.successor.adress = msg.Origin
 				//node.successor.nodeId = msg.Key
 				node.successor.nodeId = r.Key
 				//	fmt.Println("beetween")
-				return
 			}
 			//ska notifymessage ha fler variabler?
 			N := notifyMessage(nodeAdress, node.successor.adress, nodeAdress, node.nodeId)
 
-			go func() {
-				node.transport.send(N)
-			}()
+			go func(){
+				node.transport.send(N) }()
 			//	fmt.Println("node id:", node.nodeId, "node successor id:", node.successor, "node predecessor id:", node.predecessor)
 			return
 		case timer := <-time.C: //timer
@@ -185,7 +184,7 @@ func (node *DHTNode) stabilize() {
 
 func (dhtnode *DHTNode) stableTimmer() {
 	for {
-		if dhtnode.isTheNodeAlive() {
+		if dhtnode.alive {
 			time.Sleep(time.Millisecond * 5000)
 			dhtnode.createNewTask(nil, "stabilize")
 		}
@@ -193,7 +192,7 @@ func (dhtnode *DHTNode) stableTimmer() {
 }
 
 func (node *DHTNode) createNewTask(msg *Msg, typeOfTask string) {
-	if node.isTheNodeAlive() {
+	if node.alive {
 		task := &Task{msg, typeOfTask}
 		node.TaskQ <- task
 	}
@@ -275,10 +274,12 @@ func (dhtnode *DHTNode) killTheNode() {
 	dhtnode.predecessor.nodeId = ""
 }
 
-func (dhtnode *DHTNode) isTheNodeAlive() bool {
-	if dhtnode.alive == true {
+/*func (dhtnode *DHTNode) alive() bool {
+	if dhtnode.alive {
 		return true
 	} else {
 		return false
 	}
-}
+}*/
+
+//vi har ingen updatesuccessor funktion!?

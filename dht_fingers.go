@@ -113,8 +113,10 @@ func (dhtnode *DHTNode) LookUpNetworkFinger(msg *Msg) {
 	lenOfFingerTable := len(tempFingerTable)
 
 	for i := lenOfFingerTable; i > 0; i-- {
+		fmt.Println("node id:", dhtnode.nodeId,"tempfinger id:",tempFingerTable[i-1].id, "msg.Key:", msg.Key)
 		nodeBetween := (between([]byte(dhtnode.nodeId), []byte(tempFingerTable[i-1].id), []byte(msg.Key)))
 		if nodeBetween != true {
+			fmt.Println("msg. orig:", msg.Origin,"msg.key:", msg.Key,"srcAdress:", srcAdress,"tempFingerTable[i-1].adress:",tempFingerTable[i-1].adress)
 			LookUpFingerMsg := fingerLookUpMessage(msg.Origin, msg.Key, srcAdress, tempFingerTable[i-1].adress)
 			go func() {
 				dhtnode.transport.send(LookUpFingerMsg)
@@ -129,4 +131,4 @@ func (dhtnode *DHTNode) LookUpNetworkFinger(msg *Msg) {
 	}
 	//fmt.Println(dhtnode.successor.nodeId)
 	return
-}
+}	

@@ -141,12 +141,23 @@ func heartBeatMessage(origin, dst string) *Msg {
 	return msg
 }
 
-func pingMsg(dst, adress string){
+func pingMsg(dst, adress string) *Msg{
 	Msg := &Msg{}
-	msg.Dst = dst
-	msg.Adress = Adressx
-	return msg
+	Msg.Dst = dst
+	Msg.Adress = adress
+	return Msg
 }
 
-
+func heartBeatAnswer(origin, dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "heartBeatAnswer"
+	msg.Key = ""
+	msg.Adress = ""
+	msg.Id = ""
+	msg.Origin = origin
+	msg.Src = ""
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
 
