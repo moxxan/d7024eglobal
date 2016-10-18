@@ -8,16 +8,17 @@ type Msg struct {
 	Src    string //från noden som kalla
 	Dst    string //destinationsadress
 	Bytes  []byte //transport funktionen, msg.Bytes
-	Adress string //EVENTUELLT PEKA PÅ TINYNODE?
-	Id     string
-	Type   string // type of message thats is being sent
+	liteNode  *Finger
+
+	Type string // type of message thats is being sent
 }
 
 func message(t, origin, dst, src, key string, bytes []byte) *Msg {
 	msg := &Msg{}
 	msg.Type = t
-	msg.Adress = ""
-	msg.Id = ""
+	msg.liteNode = &Finger{}
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = src
 	msg.Dst = dst
@@ -26,11 +27,10 @@ func message(t, origin, dst, src, key string, bytes []byte) *Msg {
 	return msg
 }
 
-func joinMessage(dst string) *Msg {
+func joinMessage(dst, adress, id string) *Msg {
 	msg := &Msg{}
-	msg.Type = "addToRing"
-	msg.Adress = ""
-	msg.Id = ""
+	msg.Type = "join"
+	msg.liteNode = &Finger{id, adress}
 	msg.Origin = "" //origin?
 	msg.Src = ""
 	msg.Dst = dst
@@ -42,8 +42,8 @@ func joinMessage(dst string) *Msg {
 func printMessage(origin, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "printRing"
-	msg.Adress = ""
-	msg.Id = ""
+	//msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = ""
 	msg.Dst = dst
@@ -55,8 +55,7 @@ func printMessage(origin, dst string) *Msg {
 func notifyMessage(src, dst, adress, id string) *Msg {
 	msg := &Msg{}
 	msg.Type = "notify"
-	msg.Adress = ""
-	msg.Id = ""
+	msg.liteNode = &Finger{id, adress}
 	msg.Origin = ""
 	msg.Key = ""
 	msg.Src = src
@@ -68,8 +67,8 @@ func notifyMessage(src, dst, adress, id string) *Msg {
 func getNodeMessage(src, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "pred"
-	msg.Adress = ""
-	msg.Id = ""
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = ""
 	msg.Src = src
 	msg.Dst = dst
@@ -80,8 +79,7 @@ func getNodeMessage(src, dst string) *Msg {
 func responseMessage(src, dst, adress, id string) *Msg {
 	msg := &Msg{}
 	msg.Type = "response"
-	msg.Adress = adress
-	msg.Id = id
+	msg.liteNode = &Finger{id, adress}
 	msg.Origin = ""
 	msg.Src = src
 	msg.Dst = dst
@@ -93,8 +91,8 @@ func lookUpMessage(origin, key, src, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "lookup"
 	msg.Key = key
-	msg.Adress = ""
-	msg.Id = ""
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = src
 	msg.Dst = dst
@@ -106,8 +104,8 @@ func fingerLookUpMessage(origin, key, src, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "fingerLookup"
 	msg.Key = key
-	msg.Adress = ""
-	msg.Id = ""
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = src
 	msg.Dst = dst
@@ -119,8 +117,8 @@ func fingerPrintMessage(origin, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "fingerPrint"
 	msg.Key = ""
-	msg.Adress = ""
-	msg.Id = ""
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = ""
 	msg.Dst = dst
@@ -132,28 +130,21 @@ func heartBeatMessage(origin, dst string) *Msg {
 	msg := &Msg{}
 	msg.Type = "heartBeat"
 	msg.Key = ""
-	msg.Adress = ""
-	msg.Id = ""
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = ""
 	msg.Dst = dst
 	msg.Bytes = nil
 	return msg
-}
-
-func pingMsg(dst, adress string) *Msg{
-	Msg := &Msg{}
-	Msg.Dst = dst
-	Msg.Adress = adress
-	return Msg
 }
 
 func heartBeatAnswer(origin, dst string) *Msg {
 	msg := &Msg{}
-	msg.Type = "heartBeatAnswer"
+	msg.Type = "heartAnswer"
 	msg.Key = ""
-	msg.Adress = ""
-	msg.Id = ""
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
 	msg.Origin = origin
 	msg.Src = ""
 	msg.Dst = dst
@@ -161,3 +152,49 @@ func heartBeatAnswer(origin, dst string) *Msg {
 	return msg
 }
 
+func AliveMessage(origin, dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "isAlive"
+//	msg.liteNode.adress = ""
+//	msg.liteNode.id = ""
+	msg.Origin = origin
+	//msg.Src = ""
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
+
+func nodeFoundMessage(origin, dst, adress, key string) *Msg {
+	msg := &Msg{}
+	msg.Type = "nodeFound"
+	msg.liteNode = &Finger{key, adress}
+	//msg.Key = key
+	msg.Origin = origin
+	msg.Src = ""
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
+
+func ackMsg(src, dst string) *Msg {
+	msg := &Msg{}
+	msg.Type = "ack"
+	//msg.liteNode.adress = ""
+	//msg.liteNode.id = ""
+	msg.Origin = ""
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}
+
+func fingerStartMessage(src, dst, adress, id string) *Msg {
+	msg := &Msg{}
+	msg.Type = "fingerStart"
+	msg.liteNode = &Finger{id, adress}
+	msg.Origin = ""
+	msg.Src = src
+	msg.Dst = dst
+	msg.Bytes = nil
+	return msg
+}

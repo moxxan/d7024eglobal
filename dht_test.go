@@ -3,7 +3,7 @@ package dht
 //go test -test.run TestDHT1
 
 import (
-	//"fmt"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -25,6 +25,15 @@ func TestDHT2(t *testing.T) {
 	//	node6 := makeDHTNode(nil, "localhost", "1116")
 	node7 := makeDHTNode(&id7, "localhost", "1117")
 
+	/*node0 := makeDHTNode(nil, "localhost", "1110")
+	node1 := makeDHTNode(nil, "localhost", "1111")
+	node2 := makeDHTNode(nil, "localhost", "1112")
+	node3 := makeDHTNode(nil, "localhost", "1113")
+	node4 := makeDHTNode(nil, "localhost", "1114")
+	//	node5 := makeDHTNode(nil, "localhost", "1115")
+	//	node6 := makeDHTNode(nil, "localhost", "1116")
+	node7 := makeDHTNode(nil, "localhost", "1117")*/
+
 	//	key1 := "2b230fe12d1c9c60a8e489d028417ac89de57635"
 	//	key2 := "87adb987ebbd55db2c5309fd4b23203450ab0083"
 	//	key3 := "74475501523a71c34f945ae4e87d571c2c57f6f3"
@@ -43,28 +52,47 @@ func TestDHT2(t *testing.T) {
 	//	fmt.Println("TEST: " + node1.lookup(key3).nodeId + " is responsible for " + key3)
 
 	node1.start_server()
+	fmt.Println("start 1")
 	node2.start_server()
+	fmt.Println("start 2")
 	node3.start_server()
+	fmt.Println("start 3")
 	node7.start_server()
+	fmt.Println("start 7")
 	node0.start_server()
+	fmt.Println("start 0")
 
-	src := node1.contact.ip + ":" + node1.contact.port
 	//dst := node2.contact.ip + ":" + node2.contact.port
+	src := node1.contact.ip + ":" + node1.contact.port
 	master := &tinyNode{node1.nodeId, src}
 	//node1.PrintRingProc()
+
+	fmt.Println("src:", src)
+	fmt.Println("master:", master)
+	fmt.Println("node 2:", node2)
 	node2.join(master)
+	fmt.Println("")	
+	fmt.Println("node 2 join, node 3 soon join")
 	node3.join(master)
 	node0.join(master)
 	node7.join(master)
+	//node1.isTheNodeAlive()
+	
 	time.Sleep(time.Second * 5)
+	//node1.killTheNode()
+	//node1.PrintOutNetworkFingers()
+	//node1.isTheNodeAlive()
 
 	//node1.initLookUpNetworkFingers("08", node3)
 
 	//node1.initNetworkLookUp("01", node1)
+	//time.Sleep(time.Second * 10)
 	//node1.initPrintNetworkFingers(node2)
 
 	node4.transport.listen()
 
 	//Glöm inte lägga till en timer på "20000sek" så inte allt dör.
+
 	time.Sleep(2000 * time.Second)
+
 }
